@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "oxlint",
-    "preview": "vite preview"
+    "lint": "oxlint && steiger ./src",
+    "preview": "vite preview",
+    "lint:fsd": "steiger ./src",
+    "typecheck": "tsc -b"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -17,11 +19,13 @@
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
+    "@feature-sliced/steiger-plugin": "^0.8.0",
     "@types/node": "^24.13.3",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
     "@vitejs/plugin-react": "^6.1.1",
     "oxlint": "^1.81.0",
+    "steiger": "^0.7.0",
     "typescript": "~6.0.2",
     "vite": "^8.3.0"
   }

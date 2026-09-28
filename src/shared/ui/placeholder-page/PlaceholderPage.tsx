@@ -1,10 +1,10 @@
 import { useParams } from 'react-router'
 
-type PlaceholderProps = {
+type PlaceholderPageProps = {
   title: string
 }
 
-export default function Placeholder({ title }: PlaceholderProps) {
+export function PlaceholderPage({ title }: PlaceholderPageProps) {
   const params = useParams()
   const entries = Object.entries(params)
 
