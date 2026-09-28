@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router'
+import { LoginPage } from '@/pages/login'
 import { PlaceholderPage } from '@/shared/ui/placeholder-page'
 import { AppLayout } from '../layouts/AppLayout'
 import {
@@ -21,12 +22,8 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: page('Home') },
 
-          // Auth (4.1)
-          { path: 'login', element: page('Sign In') },
-          { path: 'register', element: page('Register') },
-          { path: 'verify-email', element: page('Verify Email') },
-          { path: 'forgot-password', element: page('Forgot Password') },
-          { path: 'reset-password', element: page('Reset Password') },
+          // Auth (4.1): passwordless email OTP, first sign-in creates the account
+          { path: 'login', element: <LoginPage /> },
 
           // Discovery, registration, checkout (4.3.1, 4.4, 4.6)
           { path: 'events', element: page('Browse Events') },

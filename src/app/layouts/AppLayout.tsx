@@ -1,4 +1,5 @@
-import { Link, NavLink, Outlet, useMatches } from 'react-router'
+import { Link, NavLink, Outlet, useLocation, useMatches } from 'react-router'
+import { clearSession, useSession } from '@/entities/user'
 import { areas, type RouteHandle } from './navigation'
 
 function isRouteHandle(handle: unknown): handle is RouteHandle {
@@ -7,6 +8,8 @@ function isRouteHandle(handle: unknown): handle is RouteHandle {
 
 export function AppLayout() {
   const matches = useMatches()
+  const location = useLocation()
+  const session = useSession()
   // The deepest route with a handle decides the area and the second header row
   const match = matches.findLast((m) => isRouteHandle(m.handle))
   const handle = match && isRouteHandle(match.handle) ? match.handle : undefined
@@ -35,13 +38,28 @@ export function AppLayout() {
               </Link>
             ))}
           </nav>
-          <div className="ml-auto flex gap-4 text-sm">
-            <Link to="/login" className="text-gray-600 hover:text-gray-900">
-              Sign In
-            </Link>
-            <Link to="/register" className="font-medium text-indigo-600 hover:text-indigo-700">
-              Register
-            </Link>
+          <div className="ml-auto flex items-center gap-4 text-sm">
+            {session ? (
+              <>
+                <span className="text-gray-600">{session.user.email}</span>
+                <button
+                  type="button"
+                  onClick={clearSession}
+                  className="font-medium text-gray-900 hover:text-indigo-600"
+                >
+                  Sign Out
+                </button>
+              </>
+            ) : (
+              location.pathname !== '/login' && (
+                <Link
+                  to={`/login?redirectTo=${encodeURIComponent(location.pathname + location.search)}`}
+                  className="font-medium text-indigo-600 hover:text-indigo-700"
+                >
+                  Sign In
+                </Link>
+              )
+            )}
           </div>
         </div>
 
