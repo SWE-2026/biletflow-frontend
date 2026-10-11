@@ -1,6 +1,13 @@
 import { Link, NavLink, Outlet, useLocation, useMatches } from 'react-router'
 import { clearSession, useSession } from '@/entities/user'
+import { apiRequest } from '@/shared/api'
 import { areas, type RouteHandle } from './navigation'
+
+// Revoke the token server-side, but sign out locally even if that request fails
+function signOut() {
+  void apiRequest('/auth/logout', { method: 'POST' }).catch(() => undefined)
+  clearSession()
+}
 
 function isRouteHandle(handle: unknown): handle is RouteHandle {
   return typeof handle === 'object' && handle !== null && 'subNav' in handle
@@ -41,10 +48,12 @@ export function AppLayout() {
           <div className="ml-auto flex items-center gap-4 text-sm">
             {session ? (
               <>
-                <span className="text-gray-600">{session.user.email}</span>
+                <span className="text-gray-600">
+                  {session.user.displayName || session.user.email}
+                </span>
                 <button
                   type="button"
-                  onClick={clearSession}
+                  onClick={signOut}
                   className="font-medium text-gray-900 hover:text-indigo-600"
                 >
                   Sign Out
@@ -66,7 +75,10 @@ export function AppLayout() {
         {subNav && (
           <div className="flex items-center gap-4 overflow-x-auto border-b border-gray-200 bg-gray-50 px-6 text-sm">
             {subNav.back && (
-              <Link to={subNav.back.to} className="shrink-0 py-2.5 text-gray-500 hover:text-gray-900">
+              <Link
+                to={subNav.back.to}
+                className="shrink-0 py-2.5 text-gray-500 hover:text-gray-900"
+              >
                 ← {subNav.back.label}
               </Link>
             )}

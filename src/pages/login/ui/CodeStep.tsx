@@ -6,6 +6,7 @@ import { OtpInput } from '@/shared/ui/otp-input'
 import { authApi } from '../api/authApi'
 import type { OtpChallenge } from '../api/types'
 import { useSecondsLeft } from '../lib/useSecondsLeft'
+import { DemoCodeNotice } from './DemoCodeNotice'
 
 const CODE_LENGTH = 6
 
@@ -64,16 +65,12 @@ export function CodeStep({ email, challenge, sentAt, onResent, onChangeEmail }: 
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-5">
       <p className="text-sm text-gray-600">
-        We sent a {CODE_LENGTH}-digit code to <span className="font-medium text-gray-900">{email}</span>.
-        It expires in {Math.round(challenge.expiresInSeconds / 60)} minutes.
+        We sent a {CODE_LENGTH}-digit code to{' '}
+        <span className="font-medium text-gray-900">{email}</span>. It expires in{' '}
+        {Math.round(challenge.expiresInSeconds / 60)} minutes.
       </p>
 
-      {challenge.demoCode && (
-        <p className="rounded-md border border-dashed border-amber-500 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-          <span className="font-semibold">Demo mode:</span> no email is sent. Your code is{' '}
-          <span className="font-mono font-semibold tracking-widest">{challenge.demoCode}</span>
-        </p>
-      )}
+      <DemoCodeNotice code={challenge.demoCode} />
 
       <OtpInput
         label="Verification code"

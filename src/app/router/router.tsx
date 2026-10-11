@@ -22,7 +22,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: page('Home') },
 
-          // Auth (4.1): passwordless email OTP, first sign-in creates the account
+          // Auth (4.1): email code (first sign-in creates the account) or password
           { path: 'login', element: <LoginPage /> },
 
           // Discovery, registration, checkout (4.3.1, 4.4, 4.6)
