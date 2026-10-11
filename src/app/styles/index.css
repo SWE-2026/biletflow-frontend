@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+/* The UI is light-only for now; without this, dark-mode browsers paint a dark page behind dark text */
+:root {
+  color-scheme: light;
+}
+
+body {
+  @apply bg-gray-50 text-gray-900;
+}
