@@ -1,2 +1,2 @@
-export { ApiError, getErrorMessage } from './ApiError'
-export { apiRequest } from './request'
+export { ApiError, getErrorMessage, getFieldError } from './ApiError'
+export { apiRequest, configureApiAuth } from './request'

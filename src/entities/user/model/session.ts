@@ -13,7 +13,9 @@ function isSession(value: unknown): value is Session {
     typeof user === 'object' &&
     user !== null &&
     typeof user.id === 'string' &&
-    typeof user.email === 'string'
+    typeof user.email === 'string' &&
+    // Sessions stored before the API contract included roles are discarded
+    typeof user.role === 'string'
   )
 }
 

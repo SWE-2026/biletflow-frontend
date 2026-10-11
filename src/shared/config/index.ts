@@ -1,1 +1,1 @@
-export { apiUrl, isDemoMode } from './env'
+export { apiUrl } from './env'

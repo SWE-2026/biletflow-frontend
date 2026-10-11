@@ -1,2 +1,2 @@
-export type { Session, User } from './model/user'
+export type { Session, User, UserRole } from './model/user'
 export { clearSession, getSession, setSession, useSession } from './model/session'
