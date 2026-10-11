@@ -5,7 +5,7 @@ Web app for BiletFlow, a self-service event ticketing platform for Kazakhstan (a
 ## Stack
 
 - React 19 + TypeScript, Vite
-- React Router v7 (data router, `createBrowserRouter`), imported from `react-router`
+- React Router v8 (data router, `createBrowserRouter`), imported from `react-router`
 - Tailwind CSS v4 (via `@tailwindcss/vite`; no `tailwind.config`, entry is `src/app/styles/index.css`)
 - oxlint + Steiger (FSD linter)
 
@@ -16,6 +16,19 @@ Web app for BiletFlow, a self-service event ticketing platform for Kazakhstan (a
 - `npm run typecheck`: `tsc -b` only
 - `npm run lint`: oxlint + Steiger
 - `npm run lint:fsd`: Steiger only
+
+## API
+
+- Backend: `../biletflow-api` (Go). The contract is `biletflow-api/docs/api.md`; read it before
+  adding a request, and change it there first if the client needs something new.
+- Run it with `docker compose up --build` in `biletflow-api` (API on :8080, local mode).
+- `VITE_API_URL` is the base URL **including** `/api/v1`; it defaults to `http://localhost:8080/api/v1`.
+  If the dev server is not on :5173, start the API with that origin in `CORS_ORIGINS`.
+- Use `apiRequest` from `@/shared/api`. It attaches the session token itself (wired in
+  `app/App.tsx`) and signs the user out on a rejected token. Errors are `ApiError` with
+  `code`, `message` and `fields`; branch on `code`, show `message`, map `fields` onto form inputs.
+- There is no in-browser mock. In local mode the API returns one-time codes as `demoCode`; show
+  them with a clear "Local mode" label.
 
 ## Zero lint errors
 
@@ -69,3 +82,8 @@ src/
 - Payments, activation fees and payouts are **simulated or sandboxed**. Any demonstration payment must be clearly labelled as such in the UI.
 - The client never trusts discount or price values. Promo and campaign tokens are opaque and validated by the server.
 - Seat maps and event pages target WCAG 2.1 AA: never use color alone to show status, and always add text or symbol labels.
+
+## Reporting style
+
+After each task, reply concisely: what changed, what's left, one-line rationale only when a
+decision is non-obvious.
