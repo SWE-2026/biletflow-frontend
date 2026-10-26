@@ -1,7 +1,14 @@
 import { createBrowserRouter } from 'react-router'
+import { CreateEventPage } from '@/pages/create-event'
+import { EditEventPage } from '@/pages/edit-event'
 import { LoginPage } from '@/pages/login'
+import { OrganizerDashboardPage } from '@/pages/organizer-dashboard'
+import { OrganizerEventPage } from '@/pages/organizer-event'
+import { OrganizerProfilePage } from '@/pages/organizer-profile'
 import { PlaceholderPage } from '@/shared/ui/placeholder-page'
 import { AppLayout } from '../layouts/AppLayout'
+import { RequireOrganizer } from '../layouts/RequireOrganizer'
+import { RequireSession } from '../layouts/RequireSession'
 import {
   adminHandle,
   attendeeHandle,
@@ -56,34 +63,40 @@ export const router = createBrowserRouter([
       {
         path: 'organizer',
         handle: organizerHandle,
+        element: <RequireSession />,
         children: [
-          { index: true, element: page('Organizer Dashboard') }, // Upcoming / Active / Completed / Cancelled (4.16)
-          { path: 'events/new', element: page('Create Event') },
-          { path: 'profile', element: page('Organizer Profile & Payouts') },
-          { path: 'support', element: page('Platform Support Cases') },
-          { path: 'support/new', element: page('New Platform Support Case') },
-          { path: 'support/:caseId', element: page('Platform Support Case') },
+          { path: 'profile', element: <OrganizerProfilePage /> },
           {
-            path: 'events/:eventId',
-            handle: organizerEventHandle,
+            element: <RequireOrganizer />,
             children: [
-              { index: true, element: page('Event Overview') },
-              { path: 'edit', element: page('Edit Event') },
-              { path: 'preview', element: page('Event Preview') },
-              { path: 'tickets', element: page('Ticket Types') },
-              { path: 'seating', element: page('Seating Layout') },
-              { path: 'activation', element: page('Paid Sales Activation') },
-              { path: 'attendees', element: page('Attendees') },
-              { path: 'orders', element: page('Orders') },
-              { path: 'orders/:orderId', element: page('Order Details') },
-              { path: 'campaigns', element: page('Promo Campaigns') },
-              { path: 'campaigns/new', element: page('New Campaign') },
-              { path: 'campaigns/:campaignId', element: page('Campaign Details') },
-              { path: 'staff', element: page('Event Admins') },
-              { path: 'analytics', element: page('Analytics') },
-              { path: 'history', element: page('Activity Timeline') },
-              { path: 'support', element: page('Attendee Support Cases') },
-              { path: 'support/:caseId', element: page('Attendee Support Case') },
+              { index: true, element: <OrganizerDashboardPage /> },
+              { path: 'events/new', element: <CreateEventPage /> },
+              { path: 'support', element: page('Platform Support Cases') },
+              { path: 'support/new', element: page('New Platform Support Case') },
+              { path: 'support/:caseId', element: page('Platform Support Case') },
+              {
+                path: 'events/:eventId',
+                handle: organizerEventHandle,
+                children: [
+                  { index: true, element: <OrganizerEventPage /> },
+                  { path: 'edit', element: <EditEventPage /> },
+                  { path: 'preview', element: page('Event Preview') },
+                  { path: 'tickets', element: page('Ticket Types') },
+                  { path: 'seating', element: page('Seating Layout') },
+                  { path: 'activation', element: page('Paid Sales Activation') },
+                  { path: 'attendees', element: page('Attendees') },
+                  { path: 'orders', element: page('Orders') },
+                  { path: 'orders/:orderId', element: page('Order Details') },
+                  { path: 'campaigns', element: page('Promo Campaigns') },
+                  { path: 'campaigns/new', element: page('New Campaign') },
+                  { path: 'campaigns/:campaignId', element: page('Campaign Details') },
+                  { path: 'staff', element: page('Event Admins') },
+                  { path: 'analytics', element: page('Analytics') },
+                  { path: 'history', element: page('Activity Timeline') },
+                  { path: 'support', element: page('Attendee Support Cases') },
+                  { path: 'support/:caseId', element: page('Attendee Support Case') },
+                ],
+              },
             ],
           },
         ],

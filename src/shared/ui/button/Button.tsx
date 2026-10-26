@@ -1,6 +1,6 @@
 import type { ButtonHTMLAttributes } from 'react'
 
-type ButtonVariant = 'primary' | 'secondary' | 'link'
+type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'link'
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant
@@ -12,6 +12,8 @@ const variantClasses: Record<ButtonVariant, string> = {
     'rounded-md bg-indigo-600 px-4 py-2.5 text-white hover:bg-indigo-700 disabled:bg-indigo-300',
   secondary:
     'rounded-md border border-gray-300 bg-white px-4 py-2.5 text-gray-900 hover:bg-gray-50 disabled:text-gray-400',
+  danger:
+    'rounded-md border border-red-300 bg-white px-4 py-2.5 text-red-700 hover:bg-red-50 disabled:text-red-300',
   link: 'text-indigo-600 underline-offset-2 hover:text-indigo-700 hover:underline disabled:text-gray-400 disabled:no-underline',
 }
 
