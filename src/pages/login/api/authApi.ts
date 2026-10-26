@@ -16,4 +16,13 @@ export const authApi = {
 
   signup: (email: string, password: string, displayName: string) =>
     apiRequest<Session>('/auth/signup', { method: 'POST', body: { email, password, displayName } }),
+
+  requestPasswordReset: (email: string) =>
+    apiRequest<OtpChallenge>('/auth/password/reset/request', { method: 'POST', body: { email } }),
+
+  confirmPasswordReset: (email: string, code: string, password: string) =>
+    apiRequest<Session>('/auth/password/reset/confirm', {
+      method: 'POST',
+      body: { email, code, password },
+    }),
 }

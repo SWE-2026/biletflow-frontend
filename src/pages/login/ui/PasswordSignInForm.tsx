@@ -6,7 +6,11 @@ import { TextField } from '@/shared/ui/text-field'
 import { authApi } from '../api/authApi'
 import { isValidEmail, normalizeEmail } from '../lib/email'
 
-export function PasswordSignInForm() {
+type PasswordSignInFormProps = {
+  onForgotPassword: () => void
+}
+
+export function PasswordSignInForm({ onForgotPassword }: PasswordSignInFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string>()
@@ -54,6 +58,11 @@ export function PasswordSignInForm() {
       <Button type="submit" loading={pending} className="w-full">
         {pending ? 'Signing in…' : 'Sign in'}
       </Button>
+      <p className="text-sm">
+        <Button variant="link" onClick={onForgotPassword} disabled={pending}>
+          Forgot password?
+        </Button>
+      </p>
     </form>
   )
 }

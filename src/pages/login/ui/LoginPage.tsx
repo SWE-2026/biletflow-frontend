@@ -4,14 +4,16 @@ import { useSession } from '@/entities/user'
 import { Button } from '@/shared/ui/button'
 import { AuthByEmailForm } from './AuthByEmailForm'
 import { PasswordSignInForm } from './PasswordSignInForm'
+import { ResetPasswordForm } from './ResetPasswordForm'
 import { SignUpForm } from './SignUpForm'
 
-type Mode = { kind: 'code' } | { kind: 'password' } | { kind: 'signup' }
+type Mode = { kind: 'code' } | { kind: 'password' } | { kind: 'signup' } | { kind: 'reset' }
 
 const titles: Record<Mode['kind'], string> = {
   code: 'Sign in to BiletFlow',
   password: 'Sign in to BiletFlow',
   signup: 'Create your account',
+  reset: 'Reset your password',
 }
 
 // Only follow same-origin paths, so ?redirectTo can't send users off-site
@@ -54,15 +56,18 @@ export function LoginPage() {
           ))}
         </div>
       )}
-      {mode.kind === 'signup' && <div className="mb-8" />}
+      {(mode.kind === 'signup' || mode.kind === 'reset') && <div className="mb-8" />}
 
       {mode.kind === 'code' && <AuthByEmailForm />}
-      {mode.kind === 'password' && <PasswordSignInForm />}
+      {mode.kind === 'password' && (
+        <PasswordSignInForm onForgotPassword={() => setMode({ kind: 'reset' })} />
+      )}
       {mode.kind === 'signup' && <SignUpForm />}
+      {mode.kind === 'reset' && <ResetPasswordForm />}
 
       <p className="mt-8 text-sm text-gray-600">
         {mode.kind === 'code' && 'New here? Signing in with a code creates your account. '}
-        {mode.kind === 'signup' ? (
+        {mode.kind === 'signup' || mode.kind === 'reset' ? (
           <Button variant="link" onClick={() => setMode({ kind: 'password' })}>
             Back to sign in
           </Button>
