@@ -13,6 +13,8 @@ import {
 import { getErrorMessage } from '@/shared/api'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
+import { TextField } from '@/shared/ui/text-field'
+import { Button } from '@/shared/ui/button'
 
 type Filter = 'all' | EventStatus
 
@@ -61,8 +63,13 @@ function EventRow({ event }: { event: Event }) {
 
 function EventList({ events }: { events: Event[] }) {
   const [filter, setFilter] = useState<Filter>('all')
+  const [search, setSearch] = useState('')
+  const query = search.trim().toLocaleLowerCase()
   const count = (f: Filter) => (f === 'all' ? events.length : events.filter((e) => e.status === f).length)
-  const visible = filter === 'all' ? events : events.filter((e) => e.status === filter)
+  const visible = events.filter((event) =>
+    (filter === 'all' || event.status === filter) &&
+    (!query || [event.title, event.venueName].some((value) => value.toLocaleLowerCase().includes(query))),
+  )
 
   if (events.length === 0) {
     return (
@@ -83,6 +90,14 @@ function EventList({ events }: { events: Event[] }) {
 
   return (
     <>
+      <TextField
+        type="search"
+        label="Search your events"
+        placeholder="Search by title or venue"
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+        className="mb-4"
+      />
       <div className="flex flex-wrap gap-2" aria-label="Filter by status">
         {FILTERS.map((f) => (
           <button
@@ -100,8 +115,18 @@ function EventList({ events }: { events: Event[] }) {
           </button>
         ))}
       </div>
+      <p role="status" className="mt-4 text-sm text-gray-600">
+        Showing {visible.length} of {events.length} events.
+      </p>
       {visible.length === 0 ? (
-        <p className="mt-6 text-sm text-gray-600">No {filterLabel(filter).toLowerCase()} events.</p>
+        <div className="mt-6 space-y-3">
+          <p className="text-sm text-gray-600">
+            {query ? 'No events match your search and status filter.' : `No ${filterLabel(filter).toLowerCase()} events.`}
+          </p>
+          <Button variant="secondary" onClick={() => { setSearch(''); setFilter('all') }}>
+            Clear filters
+          </Button>
+        </div>
       ) : (
         <ul className="mt-6 divide-y divide-gray-200 rounded-lg border border-gray-200 bg-white">
           {visible.map((event) => (
