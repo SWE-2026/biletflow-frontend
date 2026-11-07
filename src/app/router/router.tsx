@@ -5,11 +5,13 @@ import { CreateEventPage } from '@/pages/create-event'
 import { EditEventPage } from '@/pages/edit-event'
 import { EventDetailsPage } from '@/pages/event-details'
 import { HomePage } from '@/pages/home'
+import { MyTicketsPage } from '@/pages/my-tickets'
 import { LoginPage } from '@/pages/login'
 import { OrganizerDashboardPage } from '@/pages/organizer-dashboard'
 import { OrganizerEventPage } from '@/pages/organizer-event'
 import { OrderConfirmationPage } from '@/pages/order-confirmation'
 import { OrganizerProfilePage } from '@/pages/organizer-profile'
+import { TicketPage } from '@/pages/ticket'
 import { PlaceholderPage } from '@/shared/ui/placeholder-page'
 import { AppLayout } from '../layouts/AppLayout'
 import { RequireAdmin } from '../layouts/RequireAdmin'
@@ -55,15 +57,16 @@ export const router = createBrowserRouter([
           // and handled on the event page: a promo lookup needs the event ID, so there is no
           // token-only landing route.
 
-          // Attendee account (4.7, 4.9, 4.13)
+          // Attendee account (4.7, 4.9, 4.13): signed-in users only
           {
             path: 'account',
+            element: <RequireSession />,
             children: [
               { index: true, element: page('My Account') },
               { path: 'orders', element: page('My Orders') },
               { path: 'orders/:orderId', element: page('Order Details') },
-              { path: 'tickets', element: page('My Tickets') },
-              { path: 'tickets/:ticketId', element: page('Ticket') },
+              { path: 'tickets', element: <MyTicketsPage /> },
+              { path: 'tickets/:ticketId', element: <TicketPage /> },
               { path: 'support', element: page('My Support Cases') },
               { path: 'support/new', element: page('New Support Case') },
               { path: 'support/:caseId', element: page('Support Case') },
