@@ -5,12 +5,16 @@ import type { EventFormMessages } from '../i18n/messages'
 
 export const DEFAULT_TIMEZONE = 'Asia/Almaty'
 export const MAX_CAPACITY = 1_000_000
+export const MAX_GALLERY_IMAGES = 10
+export const MAX_REFUND_POLICY_LENGTH = 2000
 
 export type EventFormValues = {
   title: string
   description: string
   category: string
   imageUrl: string
+  /** Gallery image URLs, one per line. */
+  imageUrls: string
   venueName: string
   venueAddress: string
   timezone: string
@@ -20,6 +24,7 @@ export type EventFormValues = {
   endsAt: string
   registrationOpensAt: string
   registrationClosesAt: string
+  refundPolicy: string
 }
 
 export type EventFormField = keyof EventFormValues
@@ -31,6 +36,7 @@ export const emptyEventForm: EventFormValues = {
   description: '',
   category: '',
   imageUrl: '',
+  imageUrls: '',
   venueName: '',
   venueAddress: '',
   timezone: DEFAULT_TIMEZONE,
@@ -40,6 +46,7 @@ export const emptyEventForm: EventFormValues = {
   endsAt: '',
   registrationOpensAt: '',
   registrationClosesAt: '',
+  refundPolicy: '',
 }
 
 export function eventToFormValues(event: Event): EventFormValues {
@@ -49,6 +56,7 @@ export function eventToFormValues(event: Event): EventFormValues {
     description: event.description,
     category: event.category,
     imageUrl: event.imageUrl ?? '',
+    imageUrls: event.imageUrls.join('\n'),
     venueName: event.venueName,
     venueAddress: event.venueAddress,
     timezone: event.timezone,
@@ -58,6 +66,7 @@ export function eventToFormValues(event: Event): EventFormValues {
     endsAt: local(event.endsAt),
     registrationOpensAt: local(event.registrationOpensAt),
     registrationClosesAt: local(event.registrationClosesAt),
+    refundPolicy: event.refundPolicy,
   }
 }
 
@@ -82,6 +91,11 @@ export function toEventInput(
   const venueName = values.venueName.trim()
   const venueAddress = values.venueAddress.trim()
   const imageUrl = values.imageUrl.trim()
+  const imageUrls = values.imageUrls
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+  const refundPolicy = values.refundPolicy.trim()
   const capacity = Number(values.capacity)
 
   if (!title) errors.title = t.errorTitle
@@ -89,6 +103,10 @@ export function toEventInput(
   if (!venueName) errors.venueName = t.errorVenueName
   if (!venueAddress) errors.venueAddress = t.errorVenueAddress
   if (imageUrl && !isHttpUrl(imageUrl)) errors.imageUrl = t.errorImageUrl
+  if (imageUrls.length > MAX_GALLERY_IMAGES) errors.imageUrls = t.errorGalleryCount(MAX_GALLERY_IMAGES)
+  else if (!imageUrls.every(isHttpUrl)) errors.imageUrls = t.errorGalleryUrl
+  if (refundPolicy.length > MAX_REFUND_POLICY_LENGTH)
+    errors.refundPolicy = t.errorRefundPolicyLength(formatNumber(MAX_REFUND_POLICY_LENGTH, locale))
   if (!Number.isInteger(capacity) || capacity < 1 || capacity > MAX_CAPACITY)
     errors.capacity = t.errorCapacity(formatNumber(MAX_CAPACITY, locale))
 
@@ -122,6 +140,7 @@ export function toEventInput(
       description: values.description.trim(),
       category,
       imageUrl: imageUrl || null,
+      imageUrls,
       venueName,
       venueAddress,
       timezone: values.timezone,
@@ -131,6 +150,7 @@ export function toEventInput(
       endsAt,
       registrationOpensAt: opensAt,
       registrationClosesAt: closesAt,
+      refundPolicy,
     },
   }
 }

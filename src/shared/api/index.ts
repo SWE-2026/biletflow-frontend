@@ -1,2 +1,2 @@
 export { ApiError, getErrorMessage, getFieldError } from './ApiError'
-export { apiRequest, configureApiAuth } from './request'
+export { apiRequest, apiRequestBlob, configureApiAuth } from './request'

@@ -12,7 +12,7 @@ function signOut() {
 }
 
 function isRouteHandle(handle: unknown): handle is RouteHandle {
-  return typeof handle === 'object' && handle !== null && 'subNav' in handle
+  return typeof handle === 'object' && handle !== null && 'area' in handle
 }
 
 export function AppLayout() {
@@ -23,7 +23,11 @@ export function AppLayout() {
   // The deepest route with a handle decides the area and the second header row
   const match = matches.findLast((m) => isRouteHandle(m.handle))
   const handle = match && isRouteHandle(match.handle) ? match.handle : undefined
-  const subNav = match && handle ? handle.subNav(match.params, t) : undefined
+  const area =
+    typeof handle?.area === 'function'
+      ? handle.area(new URLSearchParams(location.search))
+      : handle?.area
+  const subNav = match && handle?.subNav ? handle.subNav(match.params, t) : undefined
 
   return (
     <div className="min-h-screen">
@@ -33,13 +37,13 @@ export function AppLayout() {
             BiletFlow
           </Link>
           <nav aria-label={t.mainNavigation} className="flex gap-1 text-sm">
-            {areas(t).map((item) => (
+            {areas(t, session?.user.role).map((item) => (
               <Link
                 key={item.area}
                 to={item.to}
-                aria-current={handle?.area === item.area ? 'page' : undefined}
+                aria-current={area === item.area ? 'page' : undefined}
                 className={
-                  handle?.area === item.area
+                  area === item.area
                     ? 'rounded-md bg-gray-900 px-3 py-1.5 font-medium text-white'
                     : 'rounded-md px-3 py-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }

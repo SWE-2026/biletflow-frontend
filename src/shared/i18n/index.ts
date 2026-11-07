@@ -3,6 +3,7 @@ export type { Dictionary, MessageShape } from './createMessages'
 export { getCommonMessages, useCommonMessages } from './commonMessages'
 export {
   formatCalendarDate,
+  formatCurrency,
   formatDateTime,
   formatMonthYear,
   formatNumber,

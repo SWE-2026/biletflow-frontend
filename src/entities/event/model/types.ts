@@ -13,6 +13,8 @@ export type Event = {
   description: string
   category: string
   imageUrl: string | null
+  /** Up to 10 more gallery images. */
+  imageUrls: string[]
   venueName: string
   venueAddress: string
   timezone: string
@@ -24,6 +26,8 @@ export type Event = {
   endsAt: string
   registrationOpensAt: string | null
   registrationClosesAt: string | null
+  /** Free text shown to buyers; may be empty. */
+  refundPolicy: string
   createdAt: string
   updatedAt: string
 }
@@ -33,6 +37,7 @@ export type EventInput = {
   description: string
   category: string
   imageUrl: string | null
+  imageUrls: string[]
   venueName: string
   venueAddress: string
   timezone: string
@@ -42,4 +47,5 @@ export type EventInput = {
   endsAt: string
   registrationOpensAt: string | null
   registrationClosesAt: string | null
+  refundPolicy: string
 }

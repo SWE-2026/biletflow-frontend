@@ -38,8 +38,8 @@ function readFields(data: unknown): Record<string, string> {
   )
 }
 
-export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const headers: Record<string, string> = { Accept: 'application/json' }
+async function send(path: string, options: RequestOptions, accept: string): Promise<Response> {
+  const headers: Record<string, string> = { Accept: accept }
   if (options.body !== undefined) headers['Content-Type'] = 'application/json'
   const token = auth.getToken()
   if (token) headers.Authorization = `Bearer ${token}`
@@ -61,10 +61,8 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     )
   }
 
-  const data: unknown =
-    response.status === 204 ? undefined : await response.json().catch(() => undefined)
-
   if (!response.ok) {
+    const data: unknown = await response.json().catch(() => undefined)
     if (response.status === 401 && token) auth.onUnauthorized()
     throw new ApiError(
       response.status,
@@ -74,5 +72,18 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
     )
   }
 
+  return response
+}
+
+export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const response = await send(path, options, 'application/json')
+  const data: unknown =
+    response.status === 204 ? undefined : await response.json().catch(() => undefined)
   return data as T
+}
+
+/** Fetches a file (a PDF or an image) with the session token, for downloads and `<img>`s. */
+export async function apiRequestBlob(path: string, options: RequestOptions = {}): Promise<Blob> {
+  const response = await send(path, options, '*/*')
+  return response.blob()
 }

@@ -2,17 +2,22 @@ import { createBrowserRouter } from 'react-router'
 import { BrowseEventsPage } from '@/pages/browse-events'
 import { CreateEventPage } from '@/pages/create-event'
 import { EditEventPage } from '@/pages/edit-event'
+import { EventDetailsPage } from '@/pages/event-details'
+import { HomePage } from '@/pages/home'
 import { LoginPage } from '@/pages/login'
 import { OrganizerDashboardPage } from '@/pages/organizer-dashboard'
 import { OrganizerEventPage } from '@/pages/organizer-event'
+import { OrderConfirmationPage } from '@/pages/order-confirmation'
 import { OrganizerProfilePage } from '@/pages/organizer-profile'
 import { PlaceholderPage } from '@/shared/ui/placeholder-page'
 import { AppLayout } from '../layouts/AppLayout'
+import { RequireAdmin } from '../layouts/RequireAdmin'
 import { RequireOrganizer } from '../layouts/RequireOrganizer'
 import { RequireSession } from '../layouts/RequireSession'
 import {
   adminHandle,
   attendeeHandle,
+  loginHandle,
   organizerEventHandle,
   organizerHandle,
 } from '../layouts/navigation'
@@ -24,21 +29,24 @@ export const router = createBrowserRouter([
   {
     element: <AppLayout />,
     children: [
+      // Auth (4.1): email code (first sign-in creates the account) or password
+      { path: 'login', handle: loginHandle, element: <LoginPage /> },
+
       // Attendee-facing web app
       {
         handle: attendeeHandle,
         children: [
-          { index: true, element: page('Home') },
-
-          // Auth (4.1): email code (first sign-in creates the account) or password
-          { path: 'login', element: <LoginPage /> },
+          { index: true, element: <HomePage /> },
 
           // Discovery, registration, checkout (4.3.1, 4.4, 4.6)
           { path: 'events', element: <BrowseEventsPage /> },
-          { path: 'events/:eventId', element: page('Event Details') },
+          { path: 'events/:eventId', element: <EventDetailsPage /> },
           { path: 'events/:eventId/seats', element: page('Seat Selection') },
           { path: 'events/:eventId/checkout', element: page('Checkout') },
-          { path: 'orders/:orderId/confirmation', element: page('Order Confirmation') },
+          {
+            element: <RequireSession />,
+            children: [{ path: 'orders/:orderId/confirmation', element: <OrderConfirmationPage /> }],
+          },
 
           // Campaign QR landing: resolves opaque token, redirects to event with promo applied (4.14)
           { path: 'c/:campaignToken', element: page('Campaign Link') },
@@ -107,24 +115,30 @@ export const router = createBrowserRouter([
       {
         path: 'admin',
         handle: adminHandle,
+        element: <RequireSession />,
         children: [
-          { index: true, element: page('Admin Dashboard') },
-          { path: 'users', element: page('Users') },
-          { path: 'users/:userId', element: page('User Details') },
-          { path: 'events', element: page('Events') },
-          { path: 'events/:eventId', element: page('Event Details') },
-          { path: 'moderation', element: page('Reported Events') },
-          { path: 'orders', element: page('Orders') },
-          { path: 'orders/:orderId', element: page('Order Details') },
-          { path: 'payments', element: page('Payments') },
-          { path: 'activations', element: page('Paid Sales Activations') },
-          { path: 'activations/:activationId', element: page('Activation Record') },
-          { path: 'refunds', element: page('Refunds, Disputes & Failures') },
-          { path: 'campaigns', element: page('Promo Code Activity') },
-          { path: 'support', element: page('Escalated Support Cases') },
-          { path: 'support/:caseId', element: page('Support Case') },
-          { path: 'reports', element: page('Operational Reports') },
-          { path: 'settings', element: page('Platform Settings') },
+          {
+            element: <RequireAdmin />,
+            children: [
+              { index: true, element: page('Admin Dashboard') },
+              { path: 'users', element: page('Users') },
+              { path: 'users/:userId', element: page('User Details') },
+              { path: 'events', element: page('Events') },
+              { path: 'events/:eventId', element: page('Event Details') },
+              { path: 'moderation', element: page('Reported Events') },
+              { path: 'orders', element: page('Orders') },
+              { path: 'orders/:orderId', element: page('Order Details') },
+              { path: 'payments', element: page('Payments') },
+              { path: 'activations', element: page('Paid Sales Activations') },
+              { path: 'activations/:activationId', element: page('Activation Record') },
+              { path: 'refunds', element: page('Refunds, Disputes & Failures') },
+              { path: 'campaigns', element: page('Promo Code Activity') },
+              { path: 'support', element: page('Escalated Support Cases') },
+              { path: 'support/:caseId', element: page('Support Case') },
+              { path: 'reports', element: page('Operational Reports') },
+              { path: 'settings', element: page('Platform Settings') },
+            ],
+          },
         ],
       },
 

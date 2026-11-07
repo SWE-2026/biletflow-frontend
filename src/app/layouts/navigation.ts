@@ -1,4 +1,5 @@
 import type { Params } from 'react-router'
+import type { UserRole } from '@/entities/user'
 import type { AppMessages } from '../i18n/messages'
 
 export type Area = 'attendee' | 'organizer' | 'admin'
@@ -16,15 +17,31 @@ export type SubNav = {
 }
 
 export type RouteHandle = {
-  area: Area
+  /** The highlighted header area; a function when it depends on the query string. */
+  area: Area | ((search: URLSearchParams) => Area)
   /** Builds the second header row; `t` gives the labels in the current language. */
-  subNav: (params: Params, t: AppMessages) => SubNav
+  subNav?: (params: Params, t: AppMessages) => SubNav
 }
 
-export const areas = (t: AppMessages): (NavItem & { area: Area })[] => [
+const isUnder = (path: string, prefix: string) => path === prefix || path.startsWith(`${prefix}/`)
+
+/** The header area a path belongs to. */
+export function areaForPath(path: string): Area {
+  if (isUnder(path, '/organizer')) return 'organizer'
+  if (isUnder(path, '/admin')) return 'admin'
+  return 'attendee'
+}
+
+// Sign-in belongs to the area the user was heading to (?redirectTo), and has no second row
+export const loginHandle: RouteHandle = {
+  area: (search) => areaForPath(search.get('redirectTo') ?? '/'),
+}
+
+/** Header areas for the signed-in role: Organizer once signed in, Admin for admins only. */
+export const areas = (t: AppMessages, role: UserRole | undefined): (NavItem & { area: Area })[] => [
   { area: 'attendee', to: '/events', label: t.events },
-  { area: 'organizer', to: '/organizer', label: t.organizer },
-  { area: 'admin', to: '/admin', label: t.admin },
+  ...(role ? [{ area: 'organizer' as const, to: '/organizer', label: t.organizer }] : []),
+  ...(role === 'admin' ? [{ area: 'admin' as const, to: '/admin', label: t.admin }] : []),
 ]
 
 export const attendeeHandle: RouteHandle = {

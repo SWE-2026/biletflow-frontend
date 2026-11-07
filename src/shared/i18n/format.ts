@@ -27,6 +27,16 @@ export function formatNumber(value: number, locale: Locale): string {
   return new Intl.NumberFormat(numberTag(locale)).format(value)
 }
 
+/** Formats a whole amount of money, e.g. 5 000 ₸ in kk and ru, ₸5,000 in en. */
+export function formatCurrency(amount: number, currency: string, locale: Locale): string {
+  return new Intl.NumberFormat(numberTag(locale), {
+    style: 'currency',
+    currency,
+    currencyDisplay: 'narrowSymbol',
+    maximumFractionDigits: 0,
+  }).format(amount)
+}
+
 export type DateTimeStyle = 'dateTime' | 'date' | 'time'
 
 const intlStyles: Record<DateTimeStyle, Intl.DateTimeFormatOptions> = {

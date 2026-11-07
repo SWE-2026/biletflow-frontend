@@ -10,6 +10,8 @@ import { TextField } from '@/shared/ui/text-field'
 import {
   DEFAULT_TIMEZONE,
   MAX_CAPACITY,
+  MAX_GALLERY_IMAGES,
+  MAX_REFUND_POLICY_LENGTH,
   toEventInput,
   type EventFormErrors,
   type EventFormField,
@@ -117,6 +119,13 @@ export function EventForm({
           placeholder="https://"
           {...field('imageUrl')}
         />
+        <TextArea
+          label={t.imageUrls}
+          rows={3}
+          hint={t.imageUrlsHint(MAX_GALLERY_IMAGES)}
+          placeholder="https://"
+          {...field('imageUrls')}
+        />
       </Section>
 
       <Section title={t.venue}>
@@ -199,6 +208,16 @@ export function EventForm({
             </p>
           )}
         </div>
+      </Section>
+
+      <Section title={t.policies}>
+        <TextArea
+          label={t.refundPolicy}
+          rows={4}
+          maxLength={MAX_REFUND_POLICY_LENGTH}
+          hint={t.refundPolicyHint}
+          {...field('refundPolicy')}
+        />
       </Section>
 
       {errors.form && (

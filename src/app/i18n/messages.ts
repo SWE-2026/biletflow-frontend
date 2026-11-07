@@ -46,6 +46,8 @@ export const useAppMessages = createMessages({
     becomeOrganizerPrompt: 'Create an organizer profile to create, publish and manage events.',
     becomeOrganizer: 'Become an organizer',
     organizerUnavailable: 'Organizer tools aren’t available for this account.',
+    adminPortal: 'Platform administration',
+    adminUnavailable: 'Only platform admins can open this section.',
   },
   ru: {
     signIn: 'Войти',
@@ -88,6 +90,8 @@ export const useAppMessages = createMessages({
       'Создайте профиль организатора, чтобы создавать, публиковать и вести мероприятия.',
     becomeOrganizer: 'Стать организатором',
     organizerUnavailable: 'Инструменты организатора недоступны для этой учётной записи.',
+    adminPortal: 'Администрирование платформы',
+    adminUnavailable: 'Этот раздел доступен только администраторам платформы.',
   },
   kk: {
     signIn: 'Кіру',
@@ -130,6 +134,8 @@ export const useAppMessages = createMessages({
       'Іс-шараларды құру, жариялау және басқару үшін ұйымдастырушы профилін жасаңыз.',
     becomeOrganizer: 'Ұйымдастырушы болу',
     organizerUnavailable: 'Бұл тіркелгі үшін ұйымдастырушы құралдары қолжетімсіз.',
+    adminPortal: 'Платформа әкімшілігі',
+    adminUnavailable: 'Бұл бөлім тек платформа әкімшілеріне қолжетімді.',
   },
 })
 
