@@ -1,37 +1,41 @@
 import { useParams } from 'react-router'
 import {
-  eventVisibilityDescriptions,
-  eventVisibilityLabels,
   EventPreview,
   EventStatusBadge,
   formatEventTime,
   organizerEventApi,
+  useEventMessages,
   type Event,
 } from '@/entities/event'
 import { ApiError, getErrorMessage } from '@/shared/api'
+import { formatNumber, useLocale, type Locale } from '@/shared/i18n'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
+import { useOrganizerEventMessages, type OrganizerEventMessages } from '../i18n/messages'
 import { StatusActions } from './StatusActions'
 
-function registrationWindow(event: Event): string {
-  const opens = event.registrationOpensAt && formatEventTime(event.registrationOpensAt, event.timezone)
-  const closes =
-    event.registrationClosesAt && formatEventTime(event.registrationClosesAt, event.timezone)
+function registrationWindow(event: Event, t: OrganizerEventMessages, locale: Locale): string {
+  const format = (iso: string | null) => iso && formatEventTime(iso, event.timezone, locale)
+  const opens = format(event.registrationOpensAt)
+  const closes = format(event.registrationClosesAt)
   if (opens && closes) return `${opens} – ${closes}`
-  if (opens) return `From ${opens} until the event starts`
-  if (closes) return `Until ${closes}`
-  return 'Open until the event starts'
+  if (opens) return t.registrationFrom(opens)
+  if (closes) return t.registrationUntil(closes)
+  return t.registrationOpen
 }
 
 function EventDetails({ event }: { event: Event }) {
+  const t = useOrganizerEventMessages()
+  const eventText = useEventMessages()
+  const locale = useLocale()
   const rows = [
     {
-      label: 'Visibility',
-      value: `${eventVisibilityLabels[event.visibility]}: ${eventVisibilityDescriptions[event.visibility]}`,
+      label: t.visibility,
+      value: `${eventText[`visibility_${event.visibility}`]}: ${eventText[`visibilityHint_${event.visibility}`]}`,
     },
-    { label: 'Capacity', value: event.capacity.toLocaleString('en-US') },
-    { label: 'Registration', value: registrationWindow(event) },
-    { label: 'Last updated', value: formatEventTime(event.updatedAt, event.timezone) },
+    { label: t.capacity, value: formatNumber(event.capacity, locale) },
+    { label: t.registration, value: registrationWindow(event, t, locale) },
+    { label: t.lastUpdated, value: formatEventTime(event.updatedAt, event.timezone, locale) },
   ]
 
   return (
@@ -48,6 +52,7 @@ function EventDetails({ event }: { event: Event }) {
 
 export function OrganizerEventPage() {
   const { eventId = '' } = useParams()
+  const t = useOrganizerEventMessages()
   const { state, reload, setData } = useAsyncData(`organizer-event:${eventId}`, (signal) =>
     organizerEventApi.get(eventId, signal),
   )
@@ -55,7 +60,7 @@ export function OrganizerEventPage() {
   if (state.status === 'loading')
     return (
       <div className="mx-auto max-w-4xl px-6 py-10">
-        <LoadingState label="Loading event…" />
+        <LoadingState label={t.loading} />
       </div>
     )
 
@@ -63,10 +68,7 @@ export function OrganizerEventPage() {
     return (
       <div className="mx-auto max-w-4xl px-6 py-10">
         {state.error instanceof ApiError && state.error.status === 404 ? (
-          <ErrorState
-            title="Event not found"
-            message="It may have been removed, or it belongs to another organizer."
-          />
+          <ErrorState title={t.notFound} message={t.notFoundHint} />
         ) : (
           <ErrorState message={getErrorMessage(state.error)} onRetry={reload} />
         )}
@@ -86,13 +88,13 @@ export function OrganizerEventPage() {
       </div>
       <StatusActions event={event} onChange={setData} onStale={refresh} />
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold text-gray-900">Details</h2>
+        <h2 className="text-lg font-semibold text-gray-900">{t.details}</h2>
         <EventDetails event={event} />
       </section>
       <section className="space-y-3">
         <div>
-          <h2 className="text-lg font-semibold text-gray-900">Attendee preview</h2>
-          <p className="text-sm text-gray-600">How the event page will look to attendees.</p>
+          <h2 className="text-lg font-semibold text-gray-900">{t.attendeePreview}</h2>
+          <p className="text-sm text-gray-600">{t.attendeePreviewHint}</p>
         </div>
         <EventPreview event={event} />
       </section>

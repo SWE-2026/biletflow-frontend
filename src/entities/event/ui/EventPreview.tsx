@@ -1,3 +1,5 @@
+import { useLocale } from '@/shared/i18n'
+import { useEventMessages } from '../i18n/messages'
 import { formatEventSchedule } from '../lib/format'
 import type { Event } from '../model/types'
 
@@ -17,6 +19,9 @@ type EventPreviewProps = {
 }
 
 export function EventPreview({ event }: EventPreviewProps) {
+  const t = useEventMessages()
+  const locale = useLocale()
+
   return (
     <article className="overflow-hidden rounded-lg border border-gray-200 bg-white">
       {event.imageUrl ? (
@@ -31,11 +36,11 @@ export function EventPreview({ event }: EventPreviewProps) {
         </div>
         <dl className="grid gap-3 text-sm sm:grid-cols-2">
           <div>
-            <dt className="font-medium text-gray-900">When</dt>
-            <dd className="mt-0.5 text-gray-600">{formatEventSchedule(event)}</dd>
+            <dt className="font-medium text-gray-900">{t.when}</dt>
+            <dd className="mt-0.5 text-gray-600">{formatEventSchedule(event, locale)}</dd>
           </div>
           <div>
-            <dt className="font-medium text-gray-900">Where</dt>
+            <dt className="font-medium text-gray-900">{t.where}</dt>
             <dd className="mt-0.5 text-gray-600">
               {event.venueName}
               <br />

@@ -6,6 +6,7 @@ import { OtpInput } from '@/shared/ui/otp-input'
 import { TextField } from '@/shared/ui/text-field'
 import { authApi } from '../api/authApi'
 import type { OtpChallenge } from '../api/types'
+import { authErrorMessages, useLoginMessages, type LoginMessages } from '../i18n/messages'
 import { isValidEmail, normalizeEmail } from '../lib/email'
 import { useSecondsLeft } from '../lib/useSecondsLeft'
 import { DemoCodeNotice } from './DemoCodeNotice'
@@ -26,6 +27,7 @@ function RequestStep({
   initialEmail: string
   onSent: (email: string, challenge: OtpChallenge) => void
 }) {
+  const t = useLoginMessages()
   const [email, setEmail] = useState(initialEmail)
   const [error, setError] = useState<string>()
   const [pending, setPending] = useState(false)
@@ -34,7 +36,7 @@ function RequestStep({
     event.preventDefault()
     const normalized = normalizeEmail(email)
     if (!isValidEmail(normalized)) {
-      setError('Enter a valid email address, like name@example.com.')
+      setError(t.invalidEmail)
       return
     }
     setError(undefined)
@@ -42,7 +44,7 @@ function RequestStep({
     try {
       onSent(normalized, await authApi.requestPasswordReset(normalized))
     } catch (err) {
-      setError(getErrorMessage(err))
+      setError(getErrorMessage(err, authErrorMessages(t)))
       setPending(false)
     }
   }
@@ -50,19 +52,19 @@ function RequestStep({
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-5">
       <TextField
-        label="Email"
+        label={t.email}
         type="email"
         name="email"
         autoComplete="email"
         autoFocus
-        hint="We'll email you a 6-digit code to set a new password."
+        hint={t.resetHint}
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         error={error}
         disabled={pending}
       />
       <Button type="submit" loading={pending} className="w-full">
-        {pending ? 'Sending code…' : 'Send reset code'}
+        {pending ? t.sendingCode : t.sendResetCode}
       </Button>
     </form>
   )
@@ -70,9 +72,9 @@ function RequestStep({
 
 type ConfirmErrors = { code?: string; password?: string; form?: string }
 
-function passwordProblem(password: string): string | undefined {
-  if (password.length < MIN_PASSWORD_LENGTH) return `Use at least ${MIN_PASSWORD_LENGTH} characters.`
-  if (new TextEncoder().encode(password).length > MAX_PASSWORD_BYTES) return 'This password is too long.'
+function passwordProblem(t: LoginMessages, password: string): string | undefined {
+  if (password.length < MIN_PASSWORD_LENGTH) return t.passwordTooShort(MIN_PASSWORD_LENGTH)
+  if (new TextEncoder().encode(password).length > MAX_PASSWORD_BYTES) return t.passwordTooLong
   return undefined
 }
 
@@ -89,6 +91,7 @@ function ConfirmStep({
   onResent: (challenge: OtpChallenge) => void
   onChangeEmail: () => void
 }) {
+  const t = useLoginMessages()
   const [code, setCode] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState<ConfirmErrors>({})
@@ -99,8 +102,8 @@ function ConfirmStep({
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const found: ConfirmErrors = {
-      code: code.length === CODE_LENGTH ? undefined : `Enter all ${CODE_LENGTH} digits of the code.`,
-      password: passwordProblem(password),
+      code: code.length === CODE_LENGTH ? undefined : t.enterAllDigits(CODE_LENGTH),
+      password: passwordProblem(t, password),
     }
     setErrors(found)
     if (found.code || found.password) return
@@ -110,12 +113,12 @@ function ConfirmStep({
       setSession(await authApi.confirmPasswordReset(email, code, password))
     } catch (err) {
       if (err instanceof ApiError && CODE_ERRORS.has(err.code)) {
-        setErrors({ code: err.message })
+        setErrors({ code: getErrorMessage(err, authErrorMessages(t)) })
         setCode('')
       } else {
         setErrors({
           password: err instanceof ApiError ? err.fields.password : undefined,
-          form: getErrorMessage(err),
+          form: getErrorMessage(err, authErrorMessages(t)),
         })
       }
       setPending(false)
@@ -130,7 +133,7 @@ function ConfirmStep({
       setCode('')
       onResent(next)
     } catch (err) {
-      setErrors({ form: getErrorMessage(err) })
+      setErrors({ form: getErrorMessage(err, authErrorMessages(t)) })
     } finally {
       setResending(false)
     }
@@ -139,15 +142,17 @@ function ConfirmStep({
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-5">
       <p className="text-sm text-gray-600">
-        If an account exists for <span className="font-medium text-gray-900">{email}</span>, we
-        sent it a {CODE_LENGTH}-digit code. It expires in{' '}
-        {Math.round(challenge.expiresInSeconds / 60)} minutes.
+        {t.resetCodeSent(
+          <span className="font-medium text-gray-900">{email}</span>,
+          CODE_LENGTH,
+          Math.round(challenge.expiresInSeconds / 60),
+        )}
       </p>
 
       <DemoCodeNotice code={challenge.demoCode} />
 
       <OtpInput
-        label="Reset code"
+        label={t.resetCode}
         length={CODE_LENGTH}
         value={code}
         onChange={(value) => {
@@ -159,11 +164,11 @@ function ConfirmStep({
         autoFocus
       />
       <TextField
-        label="New password"
+        label={t.newPassword}
         type="password"
         name="new-password"
         autoComplete="new-password"
-        hint={`At least ${MIN_PASSWORD_LENGTH} characters.`}
+        hint={t.passwordHint(MIN_PASSWORD_LENGTH)}
         value={password}
         onChange={(event) => setPassword(event.target.value)}
         error={errors.password}
@@ -176,13 +181,13 @@ function ConfirmStep({
         </p>
       )}
       <Button type="submit" loading={pending} className="w-full">
-        {pending ? 'Saving…' : 'Set new password'}
+        {pending ? t.saving : t.setNewPassword}
       </Button>
-      <p className="text-xs text-gray-500">This signs you out on every other device.</p>
+      <p className="text-xs text-gray-500">{t.signsOutEverywhere}</p>
 
       <div className="flex items-center justify-between text-sm">
         <Button variant="link" onClick={onChangeEmail} disabled={pending}>
-          Use a different email
+          {t.useDifferentEmail}
         </Button>
         <Button
           variant="link"
@@ -190,11 +195,11 @@ function ConfirmStep({
           disabled={resendIn > 0 || pending}
           loading={resending}
         >
-          {resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'}
+          {resendIn > 0 ? t.resendIn(resendIn) : t.resendCode}
         </Button>
       </div>
       <p aria-live="polite" className="sr-only">
-        {resending ? 'Sending a new code' : ''}
+        {resending ? t.sendingNewCode : ''}
       </p>
     </form>
   )

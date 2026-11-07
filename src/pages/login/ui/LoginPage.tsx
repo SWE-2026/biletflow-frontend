@@ -2,19 +2,13 @@ import { useState } from 'react'
 import { Navigate, useSearchParams } from 'react-router'
 import { useSession } from '@/entities/user'
 import { Button } from '@/shared/ui/button'
+import { useLoginMessages } from '../i18n/messages'
 import { AuthByEmailForm } from './AuthByEmailForm'
 import { PasswordSignInForm } from './PasswordSignInForm'
 import { ResetPasswordForm } from './ResetPasswordForm'
 import { SignUpForm } from './SignUpForm'
 
 type Mode = { kind: 'code' } | { kind: 'password' } | { kind: 'signup' } | { kind: 'reset' }
-
-const titles: Record<Mode['kind'], string> = {
-  code: 'Sign in to BiletFlow',
-  password: 'Sign in to BiletFlow',
-  signup: 'Create your account',
-  reset: 'Reset your password',
-}
 
 // Only follow same-origin paths, so ?redirectTo can't send users off-site
 function safeRedirect(target: string | null): string {
@@ -23,10 +17,18 @@ function safeRedirect(target: string | null): string {
 
 export function LoginPage() {
   const session = useSession()
+  const t = useLoginMessages()
   const [searchParams] = useSearchParams()
   const [mode, setMode] = useState<Mode>({ kind: 'code' })
 
   if (session) return <Navigate to={safeRedirect(searchParams.get('redirectTo'))} replace />
+
+  const titles: Record<Mode['kind'], string> = {
+    code: t.titleSignIn,
+    password: t.titleSignIn,
+    signup: t.titleSignUp,
+    reset: t.titleReset,
+  }
 
   return (
     <div className="mx-auto max-w-sm px-6 py-16">
@@ -35,7 +37,7 @@ export function LoginPage() {
       {(mode.kind === 'code' || mode.kind === 'password') && (
         <div
           role="tablist"
-          aria-label="Sign-in method"
+          aria-label={t.signInMethod}
           className="mt-6 mb-8 grid grid-cols-2 rounded-md bg-gray-100 p-1 text-sm"
         >
           {(['code', 'password'] as const).map((kind) => (
@@ -51,7 +53,7 @@ export function LoginPage() {
                   : 'rounded py-1.5 text-gray-600 hover:text-gray-900'
               }
             >
-              {kind === 'code' ? 'Email code' : 'Password'}
+              {kind === 'code' ? t.methodCode : t.methodPassword}
             </button>
           ))}
         </div>
@@ -66,14 +68,14 @@ export function LoginPage() {
       {mode.kind === 'reset' && <ResetPasswordForm />}
 
       <p className="mt-8 text-sm text-gray-600">
-        {mode.kind === 'code' && 'New here? Signing in with a code creates your account. '}
+        {mode.kind === 'code' && t.newHere}
         {mode.kind === 'signup' || mode.kind === 'reset' ? (
           <Button variant="link" onClick={() => setMode({ kind: 'password' })}>
-            Back to sign in
+            {t.backToSignIn}
           </Button>
         ) : (
           <Button variant="link" onClick={() => setMode({ kind: 'signup' })}>
-            Create an account with a password
+            {t.createWithPassword}
           </Button>
         )}
       </p>

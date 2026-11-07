@@ -30,6 +30,26 @@ Web app for BiletFlow, a self-service event ticketing platform for Kazakhstan (a
 - There is no in-browser mock. In local mode the API returns one-time codes as `demoCode`; show
   them with a clear "Local mode" label.
 
+## Languages (i18n)
+
+- UI languages are Kazakh (`kk`), Russian (`ru`) and English (`en`). The machinery lives in
+  `@/shared/i18n`; the language switcher is in the header (`app/layouts/LanguageSwitcher.tsx`).
+  The choice is saved in `localStorage`, otherwise the browser language is used, falling back to `ru`.
+- **No hardcoded UI text.** Each slice keeps its own strings in an `i18n/messages.ts` segment
+  (`.tsx` if a message needs markup), built with `createMessages({ en, ru, kk })`, and reads them
+  with the hook it exports: `const t = useLoginMessages()`, then `t.title` or `t.codeSent(email, 6, 10)`.
+  English is the source; `ru` and `kk` must have exactly the same keys and function signatures,
+  so a missing translation is a type error. Generic strings (loading, retry, generic API errors)
+  are in `useCommonMessages()`.
+- Messages with values are functions. Use `plural(locale, n, { one, few, many, other })` for
+  counts: Russian needs `one`/`few`/`many`, Kazakh and English need `one`/`other`.
+- Format numbers and dates with `formatNumber` and `formatDateTime` from `@/shared/i18n` and the
+  locale from `useLocale()`, never `toLocaleString` or a hardcoded locale. Some Chromium builds ship
+  broken `kk` data, so those helpers format Kazakh themselves.
+- API `message`s are English. Pass the slice's translations of the error `code`s you expect to
+  `getErrorMessage(err, { invalid_code: t.invalid_code })`; generic codes are translated in
+  `shared/api`, and unknown ones fall back to the API's message.
+
 ## Zero lint errors
 
 **No lint, type or FSD errors are allowed.** After any change, run `npm run lint` and `npm run build`. Both must pass with no errors before the work counts as done. Fix the cause. Never silence it with `eslint-disable`/`oxlint-disable` comments, `@ts-ignore`/`@ts-expect-error`, `any`, or by disabling or loosening rules in `.oxlintrc.json`, `steiger.config.ts` or `tsconfig`. If a rule seems wrong, ask first.

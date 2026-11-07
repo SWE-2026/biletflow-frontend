@@ -1,6 +1,8 @@
 import { Link, NavLink, Outlet, useLocation, useMatches } from 'react-router'
 import { clearSession, useSession } from '@/entities/user'
 import { apiRequest } from '@/shared/api'
+import { useAppMessages } from '../i18n/messages'
+import { LanguageSwitcher } from './LanguageSwitcher'
 import { areas, type RouteHandle } from './navigation'
 
 // Revoke the token server-side, but sign out locally even if that request fails
@@ -17,10 +19,11 @@ export function AppLayout() {
   const matches = useMatches()
   const location = useLocation()
   const session = useSession()
+  const t = useAppMessages()
   // The deepest route with a handle decides the area and the second header row
   const match = matches.findLast((m) => isRouteHandle(m.handle))
   const handle = match && isRouteHandle(match.handle) ? match.handle : undefined
-  const subNav = match && handle ? handle.subNav(match.params) : undefined
+  const subNav = match && handle ? handle.subNav(match.params, t) : undefined
 
   return (
     <div className="min-h-screen">
@@ -29,8 +32,8 @@ export function AppLayout() {
           <Link to="/" className="text-lg font-bold">
             BiletFlow
           </Link>
-          <nav className="flex gap-1 text-sm">
-            {areas.map((item) => (
+          <nav aria-label={t.mainNavigation} className="flex gap-1 text-sm">
+            {areas(t).map((item) => (
               <Link
                 key={item.area}
                 to={item.to}
@@ -46,6 +49,7 @@ export function AppLayout() {
             ))}
           </nav>
           <div className="ml-auto flex items-center gap-4 text-sm">
+            <LanguageSwitcher />
             {session ? (
               <>
                 <span className="text-gray-600">
@@ -56,7 +60,7 @@ export function AppLayout() {
                   onClick={signOut}
                   className="font-medium text-gray-900 hover:text-indigo-600"
                 >
-                  Sign Out
+                  {t.signOut}
                 </button>
               </>
             ) : (
@@ -65,7 +69,7 @@ export function AppLayout() {
                   to={`/login?redirectTo=${encodeURIComponent(location.pathname + location.search)}`}
                   className="font-medium text-indigo-600 hover:text-indigo-700"
                 >
-                  Sign In
+                  {t.signIn}
                 </Link>
               )
             )}
@@ -87,7 +91,7 @@ export function AppLayout() {
                 {subNav.title}
               </span>
             )}
-            <nav className="flex gap-4">
+            <nav aria-label={t.sectionNavigation} className="flex gap-4">
               {subNav.items.map((item) => (
                 <NavLink
                   key={item.to}

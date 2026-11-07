@@ -1,28 +1,30 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import {
-  eventStatusLabels,
-  eventVisibilityLabels,
   EventStatusBadge,
   formatEventSchedule,
   hasEventEnded,
   organizerEventApi,
   type Event,
+  useEventMessages,
   type EventStatus,
 } from '@/entities/event'
 import { getErrorMessage } from '@/shared/api'
+import { formatNumber, useLocale } from '@/shared/i18n'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { TextField } from '@/shared/ui/text-field'
 import { Button } from '@/shared/ui/button'
+import { useDashboardMessages } from '../i18n/messages'
 
 type Filter = 'all' | EventStatus
 
 const FILTERS: Filter[] = ['all', 'draft', 'published', 'cancelled']
 
-const filterLabel = (filter: Filter) => (filter === 'all' ? 'All' : eventStatusLabels[filter])
-
 function EventRow({ event }: { event: Event }) {
+  const t = useDashboardMessages()
+  const eventText = useEventMessages()
+  const locale = useLocale()
   const ended = event.status !== 'cancelled' && hasEventEnded(event)
 
   return (
@@ -36,12 +38,12 @@ function EventRow({ event }: { event: Event }) {
             {event.title}
           </Link>
           <EventStatusBadge status={event.status} />
-          {ended && <span className="text-xs font-medium text-gray-500">Ended</span>}
+          {ended && <span className="text-xs font-medium text-gray-500">{t.ended}</span>}
         </div>
-        <p className="mt-1 text-sm text-gray-600">{formatEventSchedule(event)}</p>
+        <p className="mt-1 text-sm text-gray-600">{formatEventSchedule(event, locale)}</p>
         <p className="mt-0.5 text-sm text-gray-500">
-          {event.venueName} · {eventVisibilityLabels[event.visibility]} · Capacity{' '}
-          {event.capacity.toLocaleString('en-US')}
+          {event.venueName} · {eventText[`visibility_${event.visibility}`]} ·{' '}
+          {t.capacity(formatNumber(event.capacity, locale))}
         </p>
       </div>
       <div className="flex gap-4 text-sm font-medium">
@@ -50,11 +52,11 @@ function EventRow({ event }: { event: Event }) {
             to={`/organizer/events/${event.id}/edit`}
             className="text-gray-600 hover:text-gray-900"
           >
-            Edit
+            {t.edit}
           </Link>
         )}
         <Link to={`/organizer/events/${event.id}`} className="text-indigo-600 hover:text-indigo-700">
-          Manage
+          {t.manage}
         </Link>
       </div>
     </li>
@@ -62,6 +64,9 @@ function EventRow({ event }: { event: Event }) {
 }
 
 function EventList({ events }: { events: Event[] }) {
+  const t = useDashboardMessages()
+  const eventText = useEventMessages()
+  const filterLabel = (f: Filter) => (f === 'all' ? t.all : eventText[`status_${f}`])
   const [filter, setFilter] = useState<Filter>('all')
   const [search, setSearch] = useState('')
   const query = search.trim().toLocaleLowerCase()
@@ -74,15 +79,15 @@ function EventList({ events }: { events: Event[] }) {
   if (events.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-gray-300 bg-white px-6 py-12 text-center">
-        <h2 className="font-semibold text-gray-900">No events yet</h2>
+        <h2 className="font-semibold text-gray-900">{t.emptyTitle}</h2>
         <p className="mt-1 text-sm text-gray-600">
-          Create your first event. It starts as a draft, so you can review it before publishing.
+          {t.emptyHint}
         </p>
         <Link
           to="/organizer/events/new"
           className="mt-5 inline-flex rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
         >
-          Create event
+          {t.createEvent}
         </Link>
       </div>
     )
@@ -92,13 +97,13 @@ function EventList({ events }: { events: Event[] }) {
     <>
       <TextField
         type="search"
-        label="Search your events"
-        placeholder="Search by title or venue"
+        label={t.searchLabel}
+        placeholder={t.searchPlaceholder}
         value={search}
         onChange={(event) => setSearch(event.target.value)}
         className="mb-4"
       />
-      <div className="flex flex-wrap gap-2" aria-label="Filter by status">
+      <div className="flex flex-wrap gap-2" aria-label={t.filterByStatus}>
         {FILTERS.map((f) => (
           <button
             key={f}
@@ -116,15 +121,15 @@ function EventList({ events }: { events: Event[] }) {
         ))}
       </div>
       <p role="status" className="mt-4 text-sm text-gray-600">
-        Showing {visible.length} of {events.length} events.
+        {t.showing(visible.length, events.length)}
       </p>
       {visible.length === 0 ? (
         <div className="mt-6 space-y-3">
           <p className="text-sm text-gray-600">
-            {query ? 'No events match your search and status filter.' : `No ${filterLabel(filter).toLowerCase()} events.`}
+            {query ? t.noMatches : t.noEventsWithStatus(filterLabel(filter))}
           </p>
           <Button variant="secondary" onClick={() => { setSearch(''); setFilter('all') }}>
-            Clear filters
+            {t.clearFilters}
           </Button>
         </div>
       ) : (
@@ -139,6 +144,7 @@ function EventList({ events }: { events: Event[] }) {
 }
 
 export function OrganizerDashboardPage() {
+  const t = useDashboardMessages()
   const { state, reload } = useAsyncData('organizer-events', (signal) =>
     organizerEventApi.list(signal),
   )
@@ -146,15 +152,15 @@ export function OrganizerDashboardPage() {
   return (
     <div className="mx-auto max-w-4xl px-6 py-10">
       <div className="mb-6 flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-semibold text-gray-900">Your events</h1>
+        <h1 className="text-2xl font-semibold text-gray-900">{t.title}</h1>
         <Link
           to="/organizer/events/new"
           className="rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
         >
-          New event
+          {t.newEvent}
         </Link>
       </div>
-      {state.status === 'loading' && <LoadingState label="Loading your events…" />}
+      {state.status === 'loading' && <LoadingState label={t.loading} />}
       {state.status === 'error' && (
         <ErrorState message={getErrorMessage(state.error)} onRetry={reload} />
       )}

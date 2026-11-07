@@ -1,5 +1,7 @@
 import type { Event, EventInput, EventVisibility } from '@/entities/event'
+import { formatNumber, type Locale } from '@/shared/i18n'
 import { isoToZonedInput, isValidTimeZone, zonedInputToIso } from '@/shared/lib/zoned-time'
+import type { EventFormMessages } from '../i18n/messages'
 
 export const DEFAULT_TIMEZONE = 'Asia/Almaty'
 export const MAX_CAPACITY = 1_000_000
@@ -68,8 +70,11 @@ function isHttpUrl(value: string): boolean {
   }
 }
 
+/** Validates the form; `t` gives the error messages, `locale` formats numbers. */
 export function toEventInput(
   values: EventFormValues,
+  t: EventFormMessages,
+  locale: Locale,
 ): { input: EventInput; errors: null } | { input: null; errors: EventFormErrors } {
   const errors: EventFormErrors = {}
   const title = values.title.trim()
@@ -79,16 +84,16 @@ export function toEventInput(
   const imageUrl = values.imageUrl.trim()
   const capacity = Number(values.capacity)
 
-  if (!title) errors.title = 'Enter a title.'
-  if (!category) errors.category = 'Enter a category.'
-  if (!venueName) errors.venueName = 'Enter a venue name.'
-  if (!venueAddress) errors.venueAddress = 'Enter a venue address.'
-  if (imageUrl && !isHttpUrl(imageUrl)) errors.imageUrl = 'Enter an http or https image URL.'
+  if (!title) errors.title = t.errorTitle
+  if (!category) errors.category = t.errorCategory
+  if (!venueName) errors.venueName = t.errorVenueName
+  if (!venueAddress) errors.venueAddress = t.errorVenueAddress
+  if (imageUrl && !isHttpUrl(imageUrl)) errors.imageUrl = t.errorImageUrl
   if (!Number.isInteger(capacity) || capacity < 1 || capacity > MAX_CAPACITY)
-    errors.capacity = `Choose a whole number from 1 to ${MAX_CAPACITY.toLocaleString('en-US')}.`
+    errors.capacity = t.errorCapacity(formatNumber(MAX_CAPACITY, locale))
 
   const timezoneValid = isValidTimeZone(values.timezone)
-  if (!timezoneValid) errors.timezone = 'Choose a timezone.'
+  if (!timezoneValid) errors.timezone = t.errorTimezone
 
   const toIso = (value: string) => (timezoneValid && value ? zonedInputToIso(value, values.timezone) : null)
   const startsAt = toIso(values.startsAt)
@@ -96,17 +101,17 @@ export function toEventInput(
   const opensAt = toIso(values.registrationOpensAt)
   const closesAt = toIso(values.registrationClosesAt)
 
-  if (!startsAt) errors.startsAt = 'Enter a start date and time.'
-  if (!endsAt) errors.endsAt = 'Enter an end date and time.'
-  else if (startsAt && endsAt <= startsAt) errors.endsAt = 'End time must be after start time.'
-  if (values.registrationOpensAt && !opensAt) errors.registrationOpensAt = 'Enter a valid date and time.'
-  if (values.registrationClosesAt && !closesAt) errors.registrationClosesAt = 'Enter a valid date and time.'
+  if (!startsAt) errors.startsAt = t.errorStartsAt
+  if (!endsAt) errors.endsAt = t.errorEndsAt
+  else if (startsAt && endsAt <= startsAt) errors.endsAt = t.errorEndsBeforeStart
+  if (values.registrationOpensAt && !opensAt) errors.registrationOpensAt = t.errorInvalidDateTime
+  if (values.registrationClosesAt && !closesAt) errors.registrationClosesAt = t.errorInvalidDateTime
   if (opensAt && startsAt && opensAt >= startsAt)
-    errors.registrationOpensAt = 'Registration must open before the event starts.'
+    errors.registrationOpensAt = t.errorOpensAfterStart
   if (closesAt && startsAt && closesAt >= startsAt)
-    errors.registrationClosesAt = 'Registration must close before the event starts.'
+    errors.registrationClosesAt = t.errorClosesAfterStart
   else if (opensAt && closesAt && closesAt <= opensAt)
-    errors.registrationClosesAt = 'Registration close must follow open.'
+    errors.registrationClosesAt = t.errorClosesBeforeOpens
 
   if (Object.keys(errors).length > 0 || !startsAt || !endsAt) return { input: null, errors }
 

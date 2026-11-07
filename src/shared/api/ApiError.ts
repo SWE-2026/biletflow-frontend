@@ -1,3 +1,5 @@
+import { getCommonMessages } from '@/shared/i18n'
+
 /** Error returned by the BiletFlow API: `{ code, message, fields? }` (see biletflow-api/docs/api.md). */
 export class ApiError extends Error {
   readonly status: number
@@ -14,9 +16,38 @@ export class ApiError extends Error {
   }
 }
 
-export function getErrorMessage(error: unknown): string {
-  if (error instanceof ApiError) return error.message
-  return 'Something went wrong. Check your connection and try again.'
+const GENERIC_CODES = [
+  'invalid_json',
+  'validation_failed',
+  'unauthorized',
+  'forbidden',
+  'not_found',
+  'rate_limited',
+  'internal',
+] as const
+
+type GenericCode = (typeof GENERIC_CODES)[number]
+
+const isGenericCode = (code: string): code is GenericCode =>
+  (GENERIC_CODES as readonly string[]).includes(code)
+
+/**
+ * A message for the user in the current language. The API's `message` is English, so known
+ * `code`s are translated: slice-specific ones through `codeMessages`, generic ones here.
+ * Unknown codes fall back to the API's message.
+ */
+export function getErrorMessage(
+  error: unknown,
+  codeMessages: Partial<Record<string, string>> = {},
+): string {
+  const common = getCommonMessages()
+  if (!(error instanceof ApiError)) return common.unexpectedError
+  const own = codeMessages[error.code]
+  if (own) return own
+  if (error.code === 'network_error') return common.networkError
+  if (error.code === 'http_error') return common.requestFailed(error.status)
+  if (isGenericCode(error.code)) return common[error.code]
+  return error.message
 }
 
 /** The message for one form field, if the API rejected it. */

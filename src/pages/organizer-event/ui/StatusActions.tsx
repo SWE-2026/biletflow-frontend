@@ -3,6 +3,7 @@ import { Link } from 'react-router'
 import { organizerEventApi, type Event } from '@/entities/event'
 import { ApiError, getErrorMessage } from '@/shared/api'
 import { Button } from '@/shared/ui/button'
+import { useOrganizerEventMessages } from '../i18n/messages'
 
 type Action = 'publish' | 'unpublish' | 'cancel'
 
@@ -12,13 +13,8 @@ type StatusActionsProps = {
   onStale: () => void
 }
 
-const publishHint: Record<Event['visibility'], string> = {
-  public: 'Publishing lists this event in Browse Events.',
-  unlisted: 'Publishing makes this event reachable by link, without listing it.',
-  private: 'This event is private, so publishing does not show it to attendees yet.',
-}
-
 export function StatusActions({ event, onChange, onStale }: StatusActionsProps) {
+  const t = useOrganizerEventMessages()
   const [pending, setPending] = useState<Action | null>(null)
   const [confirmingCancel, setConfirmingCancel] = useState(false)
   const [error, setError] = useState<string>()
@@ -30,7 +26,7 @@ export function StatusActions({ event, onChange, onStale }: StatusActionsProps) 
       onChange(await organizerEventApi[action](event.id))
       setConfirmingCancel(false)
     } catch (err) {
-      setError(getErrorMessage(err))
+      setError(getErrorMessage(err, { invalid_event_state: t.invalid_event_state }))
       if (err instanceof ApiError && err.code === 'invalid_event_state') onStale()
     }
     setPending(null)
@@ -40,17 +36,26 @@ export function StatusActions({ event, onChange, onStale }: StatusActionsProps) 
     return (
       <p className="rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
         <span aria-hidden="true">✕ </span>
-        This event was cancelled. It can't be edited or reopened.
+        {t.cancelledNotice}
+      </p>
+    )
+  }
+
+  if (event.status === 'suspended') {
+    return (
+      <p className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+        <span aria-hidden="true">‖ </span>
+        {t.suspendedNotice}
       </p>
     )
   }
 
   return (
-    <section aria-label="Event status" className="rounded-lg border border-gray-200 bg-white p-5">
+    <section aria-label={t.eventStatus} className="rounded-lg border border-gray-200 bg-white p-5">
       <div className="flex flex-wrap items-center gap-3">
         {event.status === 'draft' ? (
           <Button loading={pending === 'publish'} disabled={pending !== null} onClick={() => run('publish')}>
-            Publish
+            {t.publish}
           </Button>
         ) : (
           <Button
@@ -59,14 +64,14 @@ export function StatusActions({ event, onChange, onStale }: StatusActionsProps) 
             disabled={pending !== null}
             onClick={() => run('unpublish')}
           >
-            Unpublish
+            {t.unpublish}
           </Button>
         )}
         <Link
           to={`/organizer/events/${event.id}/edit`}
           className="rounded-md border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-50"
         >
-          Edit details
+          {t.editDetails}
         </Link>
         {!confirmingCancel && (
           <Button
@@ -75,20 +80,20 @@ export function StatusActions({ event, onChange, onStale }: StatusActionsProps) 
             onClick={() => setConfirmingCancel(true)}
             className="ml-auto"
           >
-            Cancel event
+            {t.cancelEvent}
           </Button>
         )}
       </div>
       <p className="mt-3 text-sm text-gray-600">
         {event.status === 'draft'
-          ? publishHint[event.visibility]
-          : 'Unpublishing returns the event to draft and hides it from attendees.'}
+          ? t[`publishHint_${event.visibility}`]
+          : t.unpublishHint}
       </p>
       {confirmingCancel && (
-        <div role="alertdialog" aria-label="Confirm cancellation" className="mt-4 rounded-md border border-red-200 bg-red-50 p-4">
-          <p className="text-sm font-medium text-red-900">Cancel “{event.title}”?</p>
+        <div role="alertdialog" aria-label={t.confirmCancellation} className="mt-4 rounded-md border border-red-200 bg-red-50 p-4">
+          <p className="text-sm font-medium text-red-900">{t.confirmCancelTitle(event.title)}</p>
           <p className="mt-1 text-sm text-red-800">
-            A cancelled event can't be edited, published or reopened.
+            {t.confirmCancelHint}
           </p>
           <div className="mt-3 flex gap-3">
             <Button
@@ -97,10 +102,10 @@ export function StatusActions({ event, onChange, onStale }: StatusActionsProps) 
               disabled={pending !== null}
               onClick={() => run('cancel')}
             >
-              Yes, cancel event
+              {t.confirmCancel}
             </Button>
             <Button variant="secondary" disabled={pending !== null} onClick={() => setConfirmingCancel(false)}>
-              Keep event
+              {t.keepEvent}
             </Button>
           </div>
         </div>

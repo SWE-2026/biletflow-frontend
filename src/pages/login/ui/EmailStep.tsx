@@ -4,6 +4,7 @@ import { Button } from '@/shared/ui/button'
 import { TextField } from '@/shared/ui/text-field'
 import { authApi } from '../api/authApi'
 import type { OtpChallenge } from '../api/types'
+import { authErrorMessages, useLoginMessages } from '../i18n/messages'
 import { isValidEmail, normalizeEmail } from '../lib/email'
 
 type EmailStepProps = {
@@ -12,6 +13,7 @@ type EmailStepProps = {
 }
 
 export function EmailStep({ initialEmail, onCodeSent }: EmailStepProps) {
+  const t = useLoginMessages()
   const [email, setEmail] = useState(initialEmail)
   const [error, setError] = useState<string>()
   const [pending, setPending] = useState(false)
@@ -20,7 +22,7 @@ export function EmailStep({ initialEmail, onCodeSent }: EmailStepProps) {
     event.preventDefault()
     const normalized = normalizeEmail(email)
     if (!isValidEmail(normalized)) {
-      setError('Enter a valid email address, like name@example.com.')
+      setError(t.invalidEmail)
       return
     }
 
@@ -29,7 +31,7 @@ export function EmailStep({ initialEmail, onCodeSent }: EmailStepProps) {
     try {
       onCodeSent(normalized, await authApi.requestOtp(normalized))
     } catch (err) {
-      setError(getErrorMessage(err))
+      setError(getErrorMessage(err, authErrorMessages(t)))
       setPending(false)
     }
   }
@@ -37,20 +39,20 @@ export function EmailStep({ initialEmail, onCodeSent }: EmailStepProps) {
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-5">
       <TextField
-        label="Email"
+        label={t.email}
         type="email"
         name="email"
         autoComplete="email"
         autoFocus
-        placeholder="name@example.com"
-        hint="We'll email you a 6-digit code. No password needed."
+        placeholder={t.emailPlaceholder}
+        hint={t.codeHint}
         value={email}
         onChange={(event) => setEmail(event.target.value)}
         error={error}
         disabled={pending}
       />
       <Button type="submit" loading={pending} className="w-full">
-        {pending ? 'Sending code…' : 'Continue'}
+        {pending ? t.sendingCode : t.continue}
       </Button>
     </form>
   )

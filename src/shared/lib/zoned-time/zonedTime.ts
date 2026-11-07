@@ -75,20 +75,6 @@ export function isoToZonedInput(iso: string, timeZone: string): string {
   return `${wall.year}-${pad(wall.month)}-${pad(wall.day)}T${pad(wall.hour)}:${pad(wall.minute)}`
 }
 
-export function formatInTimeZone(
-  iso: string,
-  timeZone: string,
-  options: Intl.DateTimeFormatOptions = { dateStyle: 'medium', timeStyle: 'short' },
-): string {
-  const date = new Date(iso)
-  if (Number.isNaN(date.getTime())) return ''
-  try {
-    return new Intl.DateTimeFormat('en-GB', { ...options, timeZone }).format(date)
-  } catch {
-    return new Intl.DateTimeFormat('en-GB', options).format(date)
-  }
-}
-
 export function listTimeZones(preferred: string[] = []): string[] {
   const all = Intl.supportedValuesOf('timeZone')
   return [...new Set([...preferred, ...all])]

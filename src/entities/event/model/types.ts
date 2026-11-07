@@ -1,4 +1,5 @@
-export type EventStatus = 'draft' | 'published' | 'cancelled'
+/** `suspended` is set by platform admins only. */
+export type EventStatus = 'draft' | 'published' | 'cancelled' | 'suspended'
 
 export type EventVisibility = 'public' | 'unlisted' | 'private'
 

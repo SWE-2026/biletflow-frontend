@@ -1,5 +1,4 @@
 export {
-  formatInTimeZone,
   isoToZonedInput,
   isValidTimeZone,
   listTimeZones,

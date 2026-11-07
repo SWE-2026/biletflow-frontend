@@ -1,11 +1,7 @@
 import { useMemo, useState, type FormEvent, type ReactNode } from 'react'
-import {
-  eventVisibilityDescriptions,
-  eventVisibilityLabels,
-  type EventInput,
-  type EventVisibility,
-} from '@/entities/event'
+import { useEventMessages, type EventInput, type EventVisibility } from '@/entities/event'
 import { ApiError, getErrorMessage } from '@/shared/api'
+import { useLocale } from '@/shared/i18n'
 import { listTimeZones } from '@/shared/lib/zoned-time'
 import { Button } from '@/shared/ui/button'
 import { Select } from '@/shared/ui/select'
@@ -19,6 +15,7 @@ import {
   type EventFormField,
   type EventFormValues,
 } from '../model/formValues'
+import { useEventFormMessages } from '../i18n/messages'
 
 const KAZAKHSTAN_TIMEZONES = [
   DEFAULT_TIMEZONE,
@@ -28,17 +25,6 @@ const KAZAKHSTAN_TIMEZONES = [
   'Asia/Aqtau',
   'Asia/Atyrau',
   'Asia/Oral',
-]
-
-const CATEGORY_SUGGESTIONS = [
-  'Concert',
-  'Conference',
-  'Workshop',
-  'Meetup',
-  'Theatre',
-  'Sports',
-  'Festival',
-  'Exhibition',
 ]
 
 const VISIBILITIES: EventVisibility[] = ['public', 'unlisted', 'private']
@@ -67,6 +53,9 @@ export function EventForm({
   onSubmit,
   secondaryAction,
 }: EventFormProps) {
+  const t = useEventFormMessages()
+  const eventText = useEventMessages()
+  const locale = useLocale()
   const [values, setValues] = useState(initialValues)
   const [errors, setErrors] = useState<EventFormErrors>({})
   const [pending, setPending] = useState(false)
@@ -86,9 +75,9 @@ export function EventForm({
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const result = toEventInput(values)
+    const result = toEventInput(values, t, locale)
     if (result.errors) {
-      setErrors({ ...result.errors, form: 'Some fields need your attention.' })
+      setErrors({ ...result.errors, form: t.fixErrors })
       return
     }
 
@@ -99,7 +88,7 @@ export function EventForm({
     } catch (err) {
       setErrors({
         ...(err instanceof ApiError ? err.fields : {}),
-        form: getErrorMessage(err),
+        form: getErrorMessage(err, { capacity_exceeded: t.capacity_exceeded }),
       })
     }
     setPending(false)
@@ -107,36 +96,36 @@ export function EventForm({
 
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-6">
-      <Section title="Basics">
-        <TextField label="Title" maxLength={200} autoFocus {...field('title')} />
+      <Section title={t.basics}>
+        <TextField label={t.title} maxLength={200} autoFocus {...field('title')} />
         <TextField
-          label="Category"
+          label={t.category}
           list="event-category-suggestions"
           maxLength={100}
           {...field('category')}
         />
         <datalist id="event-category-suggestions">
-          {CATEGORY_SUGGESTIONS.map((category) => (
+          {t.categorySuggestions().map((category) => (
             <option key={category} value={category} />
           ))}
         </datalist>
-        <TextArea label="Description" rows={5} maxLength={10000} {...field('description')} />
+        <TextArea label={t.description} rows={5} maxLength={10000} {...field('description')} />
         <TextField
-          label="Image URL"
+          label={t.imageUrl}
           type="url"
-          hint="Optional. A link to a cover image (http or https)."
+          hint={t.imageUrlHint}
           placeholder="https://"
           {...field('imageUrl')}
         />
       </Section>
 
-      <Section title="Venue">
-        <TextField label="Venue name" maxLength={200} {...field('venueName')} />
-        <TextField label="Venue address" maxLength={500} {...field('venueAddress')} />
+      <Section title={t.venue}>
+        <TextField label={t.venueName} maxLength={200} {...field('venueName')} />
+        <TextField label={t.venueAddress} maxLength={500} {...field('venueAddress')} />
       </Section>
 
-      <Section title="Schedule">
-        <Select label="Timezone" hint="Times below are in this timezone." {...field('timezone')}>
+      <Section title={t.schedule}>
+        <Select label={t.timezone} hint={t.timezoneHint} {...field('timezone')}>
           {timezones.map((zone) => (
             <option key={zone} value={zone}>
               {zone}
@@ -144,37 +133,37 @@ export function EventForm({
           ))}
         </Select>
         <div className="grid gap-5 sm:grid-cols-2">
-          <TextField label="Starts" type="datetime-local" {...field('startsAt')} />
-          <TextField label="Ends" type="datetime-local" {...field('endsAt')} />
+          <TextField label={t.startsAt} type="datetime-local" {...field('startsAt')} />
+          <TextField label={t.endsAt} type="datetime-local" {...field('endsAt')} />
           <TextField
-            label="Registration opens"
+            label={t.registrationOpensAt}
             type="datetime-local"
-            hint="Optional."
+            hint={t.optional}
             {...field('registrationOpensAt')}
           />
           <TextField
-            label="Registration closes"
+            label={t.registrationClosesAt}
             type="datetime-local"
-            hint="Optional. Must be before the event starts."
+            hint={t.registrationClosesHint}
             {...field('registrationClosesAt')}
           />
         </div>
       </Section>
 
-      <Section title="Capacity and visibility">
+      <Section title={t.capacityAndVisibility}>
         <TextField
-          label="Capacity"
+          label={t.capacity}
           type="number"
           inputMode="numeric"
           min={1}
           max={MAX_CAPACITY}
           step={1}
-          hint="The maximum number of attendees."
+          hint={t.capacityHint}
           className="sm:max-w-48"
           {...field('capacity')}
         />
-        <div role="radiogroup" aria-label="Visibility" className="space-y-2">
-          <p className="text-sm font-medium text-gray-900">Visibility</p>
+        <div role="radiogroup" aria-label={t.visibility} className="space-y-2">
+          <p className="text-sm font-medium text-gray-900">{t.visibility}</p>
           {VISIBILITIES.map((visibility) => (
             <label
               key={visibility}
@@ -195,10 +184,10 @@ export function EventForm({
               />
               <span>
                 <span className="block font-medium text-gray-900">
-                  {eventVisibilityLabels[visibility]}
+                  {eventText[`visibility_${visibility}`]}
                 </span>
                 <span className="block text-gray-600">
-                  {eventVisibilityDescriptions[visibility]}
+                  {eventText[`visibilityHint_${visibility}`]}
                 </span>
               </span>
             </label>

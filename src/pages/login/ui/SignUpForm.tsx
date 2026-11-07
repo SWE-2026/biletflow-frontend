@@ -4,22 +4,23 @@ import { getErrorMessage, getFieldError } from '@/shared/api'
 import { Button } from '@/shared/ui/button'
 import { TextField } from '@/shared/ui/text-field'
 import { authApi } from '../api/authApi'
+import { authErrorMessages, useLoginMessages, type LoginMessages } from '../i18n/messages'
 import { isValidEmail, normalizeEmail } from '../lib/email'
 
 const MIN_PASSWORD_LENGTH = 8
 
 type Errors = Partial<Record<'displayName' | 'email' | 'password' | 'form', string>>
 
-function validate(displayName: string, email: string, password: string): Errors {
+function validate(t: LoginMessages, displayName: string, email: string, password: string): Errors {
   const errors: Errors = {}
-  if (displayName.trim() === '') errors.displayName = 'Enter your name.'
-  if (!isValidEmail(email)) errors.email = 'Enter a valid email address, like name@example.com.'
-  if (password.length < MIN_PASSWORD_LENGTH)
-    errors.password = `Use at least ${MIN_PASSWORD_LENGTH} characters.`
+  if (displayName.trim() === '') errors.displayName = t.enterName
+  if (!isValidEmail(email)) errors.email = t.invalidEmail
+  if (password.length < MIN_PASSWORD_LENGTH) errors.password = t.passwordTooShort(MIN_PASSWORD_LENGTH)
   return errors
 }
 
 export function SignUpForm() {
+  const t = useLoginMessages()
   const [displayName, setDisplayName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -29,7 +30,7 @@ export function SignUpForm() {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const normalized = normalizeEmail(email)
-    const found = validate(displayName, normalized, password)
+    const found = validate(t, displayName, normalized, password)
     setErrors(found)
     if (Object.keys(found).length > 0) return
 
@@ -41,7 +42,7 @@ export function SignUpForm() {
         displayName: getFieldError(err, 'displayName'),
         email: getFieldError(err, 'email'),
         password: getFieldError(err, 'password'),
-        form: getErrorMessage(err),
+        form: getErrorMessage(err, authErrorMessages(t)),
       })
       setPending(false)
     }
@@ -50,7 +51,7 @@ export function SignUpForm() {
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-5">
       <TextField
-        label="Your name"
+        label={t.yourName}
         name="name"
         autoComplete="name"
         autoFocus
@@ -60,7 +61,7 @@ export function SignUpForm() {
         disabled={pending}
       />
       <TextField
-        label="Email"
+        label={t.email}
         type="email"
         name="email"
         autoComplete="email"
@@ -70,11 +71,11 @@ export function SignUpForm() {
         disabled={pending}
       />
       <TextField
-        label="Password"
+        label={t.password}
         type="password"
         name="new-password"
         autoComplete="new-password"
-        hint={`At least ${MIN_PASSWORD_LENGTH} characters.`}
+        hint={t.passwordHint(MIN_PASSWORD_LENGTH)}
         value={password}
         onChange={(event) => setPassword(event.target.value)}
         error={errors.password}
@@ -87,9 +88,9 @@ export function SignUpForm() {
         </p>
       )}
       <Button type="submit" loading={pending} className="w-full">
-        {pending ? 'Creating account…' : 'Create account'}
+        {pending ? t.creatingAccount : t.createAccount}
       </Button>
-      <p className="text-xs text-gray-500">We'll email you a code to verify your address.</p>
+      <p className="text-xs text-gray-500">{t.verifyNotice}</p>
     </form>
   )
 }

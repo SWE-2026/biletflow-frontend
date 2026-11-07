@@ -4,6 +4,7 @@ import { getErrorMessage } from '@/shared/api'
 import { Button } from '@/shared/ui/button'
 import { TextField } from '@/shared/ui/text-field'
 import { authApi } from '../api/authApi'
+import { authErrorMessages, useLoginMessages } from '../i18n/messages'
 import { isValidEmail, normalizeEmail } from '../lib/email'
 
 type PasswordSignInFormProps = {
@@ -11,6 +12,7 @@ type PasswordSignInFormProps = {
 }
 
 export function PasswordSignInForm({ onForgotPassword }: PasswordSignInFormProps) {
+  const t = useLoginMessages()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string>()
@@ -20,7 +22,7 @@ export function PasswordSignInForm({ onForgotPassword }: PasswordSignInFormProps
     event.preventDefault()
     const normalized = normalizeEmail(email)
     if (!isValidEmail(normalized) || password === '') {
-      setError('Enter your email and password.')
+      setError(t.enterEmailAndPassword)
       return
     }
     setError(undefined)
@@ -28,7 +30,7 @@ export function PasswordSignInForm({ onForgotPassword }: PasswordSignInFormProps
     try {
       setSession(await authApi.login(normalized, password))
     } catch (err) {
-      setError(getErrorMessage(err))
+      setError(getErrorMessage(err, authErrorMessages(t)))
       setPending(false)
     }
   }
@@ -36,7 +38,7 @@ export function PasswordSignInForm({ onForgotPassword }: PasswordSignInFormProps
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-5">
       <TextField
-        label="Email"
+        label={t.email}
         type="email"
         name="email"
         autoComplete="email"
@@ -46,7 +48,7 @@ export function PasswordSignInForm({ onForgotPassword }: PasswordSignInFormProps
         disabled={pending}
       />
       <TextField
-        label="Password"
+        label={t.password}
         type="password"
         name="password"
         autoComplete="current-password"
@@ -56,11 +58,11 @@ export function PasswordSignInForm({ onForgotPassword }: PasswordSignInFormProps
         disabled={pending}
       />
       <Button type="submit" loading={pending} className="w-full">
-        {pending ? 'Signing in…' : 'Sign in'}
+        {pending ? t.signingIn : t.signInButton}
       </Button>
       <p className="text-sm">
         <Button variant="link" onClick={onForgotPassword} disabled={pending}>
-          Forgot password?
+          {t.forgotPassword}
         </Button>
       </p>
     </form>

@@ -5,6 +5,7 @@ import { Button } from '@/shared/ui/button'
 import { OtpInput } from '@/shared/ui/otp-input'
 import { authApi } from '../api/authApi'
 import type { OtpChallenge } from '../api/types'
+import { authErrorMessages, useLoginMessages } from '../i18n/messages'
 import { useSecondsLeft } from '../lib/useSecondsLeft'
 import { DemoCodeNotice } from './DemoCodeNotice'
 
@@ -19,6 +20,7 @@ type CodeStepProps = {
 }
 
 export function CodeStep({ email, challenge, sentAt, onResent, onChangeEmail }: CodeStepProps) {
+  const t = useLoginMessages()
   const [code, setCode] = useState('')
   const [error, setError] = useState<string>()
   const [verifying, setVerifying] = useState(false)
@@ -28,7 +30,7 @@ export function CodeStep({ email, challenge, sentAt, onResent, onChangeEmail }: 
   const verify = async (value: string) => {
     if (verifying) return
     if (value.length !== CODE_LENGTH) {
-      setError(`Enter all ${CODE_LENGTH} digits of the code.`)
+      setError(t.enterAllDigits(CODE_LENGTH))
       return
     }
 
@@ -37,7 +39,7 @@ export function CodeStep({ email, challenge, sentAt, onResent, onChangeEmail }: 
     try {
       setSession(await authApi.verifyOtp(email, value))
     } catch (err) {
-      setError(getErrorMessage(err))
+      setError(getErrorMessage(err, authErrorMessages(t)))
       setCode('')
       setVerifying(false)
     }
@@ -51,7 +53,7 @@ export function CodeStep({ email, challenge, sentAt, onResent, onChangeEmail }: 
       setCode('')
       onResent(next)
     } catch (err) {
-      setError(getErrorMessage(err))
+      setError(getErrorMessage(err, authErrorMessages(t)))
     } finally {
       setResending(false)
     }
@@ -65,15 +67,17 @@ export function CodeStep({ email, challenge, sentAt, onResent, onChangeEmail }: 
   return (
     <form noValidate onSubmit={handleSubmit} className="space-y-5">
       <p className="text-sm text-gray-600">
-        We sent a {CODE_LENGTH}-digit code to{' '}
-        <span className="font-medium text-gray-900">{email}</span>. It expires in{' '}
-        {Math.round(challenge.expiresInSeconds / 60)} minutes.
+        {t.codeSent(
+          <span className="font-medium text-gray-900">{email}</span>,
+          CODE_LENGTH,
+          Math.round(challenge.expiresInSeconds / 60),
+        )}
       </p>
 
       <DemoCodeNotice code={challenge.demoCode} />
 
       <OtpInput
-        label="Verification code"
+        label={t.verificationCode}
         length={CODE_LENGTH}
         value={code}
         onChange={(value) => {
@@ -87,12 +91,12 @@ export function CodeStep({ email, challenge, sentAt, onResent, onChangeEmail }: 
       />
 
       <Button type="submit" loading={verifying} className="w-full">
-        {verifying ? 'Verifying…' : 'Sign in'}
+        {verifying ? t.verifying : t.signInButton}
       </Button>
 
       <div className="flex items-center justify-between text-sm">
         <Button variant="link" onClick={onChangeEmail} disabled={verifying}>
-          Use a different email
+          {t.useDifferentEmail}
         </Button>
         <Button
           variant="link"
@@ -100,11 +104,11 @@ export function CodeStep({ email, challenge, sentAt, onResent, onChangeEmail }: 
           disabled={resendIn > 0 || verifying}
           loading={resending}
         >
-          {resendIn > 0 ? `Resend code in ${resendIn}s` : 'Resend code'}
+          {resendIn > 0 ? t.resendIn(resendIn) : t.resendCode}
         </Button>
       </div>
       <p aria-live="polite" className="sr-only">
-        {resending ? 'Sending a new code' : ''}
+        {resending ? t.sendingNewCode : ''}
       </p>
     </form>
   )

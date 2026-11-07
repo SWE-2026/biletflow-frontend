@@ -6,6 +6,7 @@ import {
   type ClipboardEvent,
   type KeyboardEvent,
 } from 'react'
+import { useCommonMessages } from '@/shared/i18n'
 
 type OtpInputProps = {
   label: string
@@ -29,6 +30,7 @@ export function OtpInput({
   disabled = false,
   autoFocus = false,
 }: OtpInputProps) {
+  const t = useCommonMessages()
   const errorId = useId()
   const inputs = useRef<(HTMLInputElement | null)[]>([])
   const digits = Array.from({ length }, (_, i) => value[i] ?? '')
@@ -109,7 +111,7 @@ export function OtpInput({
             pattern="[0-9]*"
             autoComplete={index === 0 ? 'one-time-code' : 'off'}
             autoFocus={autoFocus && index === 0}
-            aria-label={`Digit ${index + 1} of ${length}`}
+            aria-label={t.otpDigit(index + 1, length)}
             aria-invalid={error ? true : undefined}
             disabled={disabled}
             value={digit}
