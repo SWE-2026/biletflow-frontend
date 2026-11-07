@@ -1,4 +1,5 @@
 import { Link, useNavigate } from 'react-router'
+import type { Promo } from '@/entities/campaign'
 import type { Event } from '@/entities/event'
 import { getSaleState, SaleStateLabel, TicketPrice, type TicketType } from '@/entities/ticket-type'
 import { RegisterForFreeEvent } from './RegisterForFreeEvent'
@@ -7,13 +8,21 @@ import { useEventDetailsMessages } from '../i18n/messages'
 type TicketTypeListProps = {
   event: Event
   ticketTypes: TicketType[]
+  /** A valid promo from a campaign link, passed on to checkout for the tickets it covers. */
+  promo: Promo | null
 }
 
-function TicketTypeRow({ event, ticketType }: { event: Event; ticketType: TicketType }) {
+type TicketTypeRowProps = { event: Event; ticketType: TicketType; promo: Promo | null }
+
+function TicketTypeRow({ event, ticketType, promo }: TicketTypeRowProps) {
   const t = useEventDetailsMessages()
   const navigate = useNavigate()
   const state = getSaleState(ticketType, event)
   const isFree = ticketType.priceAmount === 0
+  const promoApplies =
+    !isFree && promo && (promo.ticketTypeIds.length === 0 || promo.ticketTypeIds.includes(ticketType.id))
+  const checkoutQuery = new URLSearchParams({ type: ticketType.id })
+  if (promoApplies) checkoutQuery.set('promo', promo.code)
 
   return (
     <li className="space-y-3 px-5 py-4">
@@ -28,6 +37,12 @@ function TicketTypeRow({ event, ticketType }: { event: Event; ticketType: Ticket
       )}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
         <SaleStateLabel state={state} timeZone={event.timezone} />
+        {promoApplies && (
+          <span className="rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-800 ring-1 ring-green-600/30 ring-inset">
+            <span aria-hidden="true">✓ </span>
+            {t.promoApplies(promo.code)}
+          </span>
+        )}
         {state.kind === 'on_sale' && ticketType.maxPerOrder > 1 && (
           <span className="text-sm text-gray-500">{t.maxPerOrder(ticketType.maxPerOrder)}</span>
         )}
@@ -41,7 +56,7 @@ function TicketTypeRow({ event, ticketType }: { event: Event; ticketType: Ticket
           />
         ) : (
           <Link
-            to={`/events/${event.id}/checkout`}
+            to={`/events/${event.id}/checkout?${checkoutQuery}`}
             className="inline-flex rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
           >
             {t.buyTickets}
@@ -51,7 +66,7 @@ function TicketTypeRow({ event, ticketType }: { event: Event; ticketType: Ticket
   )
 }
 
-export function TicketTypeList({ event, ticketTypes }: TicketTypeListProps) {
+export function TicketTypeList({ event, ticketTypes, promo }: TicketTypeListProps) {
   const t = useEventDetailsMessages()
 
   return (
@@ -66,7 +81,7 @@ export function TicketTypeList({ event, ticketTypes }: TicketTypeListProps) {
       ) : (
         <ul className="divide-y divide-gray-200">
           {ticketTypes.map((ticketType) => (
-            <TicketTypeRow key={ticketType.id} event={event} ticketType={ticketType} />
+            <TicketTypeRow key={ticketType.id} event={event} ticketType={ticketType} promo={promo} />
           ))}
         </ul>
       )}

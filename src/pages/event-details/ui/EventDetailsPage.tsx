@@ -1,12 +1,19 @@
 import type { ReactNode } from 'react'
-import { Link, useParams } from 'react-router'
-import { formatEventSchedule, formatEventTime, useEventMessages, type Event } from '@/entities/event'
+import { Link, useParams, useSearchParams } from 'react-router'
+import { lookupPromo } from '@/entities/campaign'
+import {
+  formatEventSchedule,
+  formatEventTime,
+  publicEventApi,
+  useEventMessages,
+  type Event,
+} from '@/entities/event'
 import { ApiError, getErrorMessage } from '@/shared/api'
 import { useLocale, type Locale } from '@/shared/i18n'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
-import { getEventDetails } from '../api/eventDetailsApi'
 import { useEventDetailsMessages, type EventDetailsMessages } from '../i18n/messages'
+import { CampaignBanner } from './CampaignBanner'
 import { TicketTypeList } from './TicketTypeList'
 
 function registrationWindow(event: Event, t: EventDetailsMessages, locale: Locale) {
@@ -132,7 +139,12 @@ export function EventDetailsPage() {
   const { eventId = '' } = useParams()
   const t = useEventDetailsMessages()
   const { state, reload } = useAsyncData(`public-event:${eventId}`, (signal) =>
-    getEventDetails(eventId, signal),
+    publicEventApi.get(eventId, signal),
+  )
+  // Campaign QR links open /events/:eventId?campaign=<opaque token>; the server validates it
+  const campaignToken = useSearchParams()[0].get('campaign')
+  const campaign = useAsyncData(`campaign:${eventId}:${campaignToken ?? ''}`, (signal) =>
+    campaignToken ? lookupPromo(eventId, { campaign: campaignToken }, signal) : Promise.resolve(null),
   )
 
   if (state.status === 'loading')
@@ -161,7 +173,18 @@ export function EventDetailsPage() {
   const { event, ticketTypes } = state.data
   return (
     <EventDetails event={event}>
-      <TicketTypeList event={event} ticketTypes={ticketTypes} />
+      {campaignToken && (
+        <CampaignBanner
+          state={campaign.state}
+          ticketTypeNames={Object.fromEntries(ticketTypes.map((type) => [type.id, type.name]))}
+          timeZone={event.timezone}
+        />
+      )}
+      <TicketTypeList
+        event={event}
+        ticketTypes={ticketTypes}
+        promo={campaign.state.status === 'success' ? campaign.state.data : null}
+      />
     </EventDetails>
   )
 }

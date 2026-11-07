@@ -8,7 +8,7 @@ import { authApi } from '../api/authApi'
 import type { OtpChallenge } from '../api/types'
 import { authErrorMessages, useLoginMessages, type LoginMessages } from '../i18n/messages'
 import { isValidEmail, normalizeEmail } from '../lib/email'
-import { useSecondsLeft } from '../lib/useSecondsLeft'
+import { useSecondsLeft } from '@/shared/lib/seconds-left'
 import { DemoCodeNotice } from './DemoCodeNotice'
 
 const CODE_LENGTH = 6

@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router'
 import { formatEventSchedule } from '@/entities/event'
-import type { Order } from '../model/order'
+import { getMyOrder, OrderStatusBadge, type Order } from '@/entities/order'
 import { TicketStatusBadge, type Ticket } from '@/entities/ticket'
 import { TicketPrice } from '@/entities/ticket-type'
 import { ApiError, getErrorMessage } from '@/shared/api'
@@ -10,9 +10,8 @@ import { useAsyncData } from '@/shared/lib/async-data'
 import { saveBlob } from '@/shared/lib/download'
 import { Button } from '@/shared/ui/button'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
-import { orderApi } from '../api/orderApi'
+import { getOrderTicketsPdf } from '../api/orderApi'
 import { useConfirmationMessages } from '../i18n/messages'
-import { OrderStatusBadge } from './OrderStatusBadge'
 
 /** A short, readable reference; the full ID is on the printed ticket. */
 const shortId = (id: string) => id.slice(0, 8).toUpperCase()
@@ -35,7 +34,7 @@ function DownloadTickets({ orderId }: { orderId: string }) {
     setPending(true)
     setError(undefined)
     try {
-      saveBlob(await orderApi.ticketsPdf(orderId), `biletflow-tickets-${shortId(orderId)}.pdf`)
+      saveBlob(await getOrderTicketsPdf(orderId), `biletflow-tickets-${shortId(orderId)}.pdf`)
     } catch (err) {
       setError(getErrorMessage(err, { ticket_not_printable: t.ticket_not_printable }))
     }
@@ -204,7 +203,7 @@ export function OrderConfirmationPage() {
   const { orderId = '' } = useParams()
   const t = useConfirmationMessages()
   const { state, reload } = useAsyncData(`my-order:${orderId}`, (signal) =>
-    orderApi.get(orderId, signal),
+    getMyOrder(orderId, signal),
   )
 
   if (state.status === 'success')

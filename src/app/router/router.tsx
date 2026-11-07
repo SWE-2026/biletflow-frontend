@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router'
 import { BrowseEventsPage } from '@/pages/browse-events'
+import { CheckoutPage } from '@/pages/checkout'
 import { CreateEventPage } from '@/pages/create-event'
 import { EditEventPage } from '@/pages/edit-event'
 import { EventDetailsPage } from '@/pages/event-details'
@@ -42,14 +43,17 @@ export const router = createBrowserRouter([
           { path: 'events', element: <BrowseEventsPage /> },
           { path: 'events/:eventId', element: <EventDetailsPage /> },
           { path: 'events/:eventId/seats', element: page('Seat Selection') },
-          { path: 'events/:eventId/checkout', element: page('Checkout') },
           {
             element: <RequireSession />,
-            children: [{ path: 'orders/:orderId/confirmation', element: <OrderConfirmationPage /> }],
+            children: [
+              { path: 'events/:eventId/checkout', element: <CheckoutPage /> },
+              { path: 'orders/:orderId/confirmation', element: <OrderConfirmationPage /> },
+            ],
           },
 
-          // Campaign QR landing: resolves opaque token, redirects to event with promo applied (4.14)
-          { path: 'c/:campaignToken', element: page('Campaign Link') },
+          // Campaign QR links (4.14) are /events/:eventId?campaign=<token>, built by the API,
+          // and handled on the event page: a promo lookup needs the event ID, so there is no
+          // token-only landing route.
 
           // Attendee account (4.7, 4.9, 4.13)
           {

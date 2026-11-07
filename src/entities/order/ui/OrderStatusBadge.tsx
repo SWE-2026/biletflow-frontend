@@ -1,5 +1,5 @@
-import { useOrderMessages } from '../i18n/orderMessages'
-import type { OrderStatus } from '../model/order'
+import { useOrderMessages } from '../i18n/messages'
+import type { OrderStatus } from '../model/types'
 
 const styles: Record<OrderStatus, { className: string; symbol: string }> = {
   pending: { className: 'bg-amber-50 text-amber-900 ring-amber-600/30', symbol: '◷' },

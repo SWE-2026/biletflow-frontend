@@ -2,6 +2,7 @@ export type { Event, EventInput, EventPhase, EventStatus, EventVisibility } from
 export { useEventMessages } from './i18n/messages'
 export { organizerEventApi } from './api/organizerEventApi'
 export { publicEventApi } from './api/publicEventApi'
+export type { PublicEventDetails } from './api/publicEventApi'
 export { formatEventSchedule, formatEventTime, hasEventEnded } from './lib/format'
 export { upcomingEvents } from './lib/upcoming'
 export { EventCard } from './ui/EventCard'

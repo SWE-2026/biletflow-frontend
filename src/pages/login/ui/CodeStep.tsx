@@ -6,7 +6,7 @@ import { OtpInput } from '@/shared/ui/otp-input'
 import { authApi } from '../api/authApi'
 import type { OtpChallenge } from '../api/types'
 import { authErrorMessages, useLoginMessages } from '../i18n/messages'
-import { useSecondsLeft } from '../lib/useSecondsLeft'
+import { useSecondsLeft } from '@/shared/lib/seconds-left'
 import { DemoCodeNotice } from './DemoCodeNotice'
 
 const CODE_LENGTH = 6
