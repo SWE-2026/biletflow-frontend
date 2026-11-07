@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router'
+import { BrowseEventsPage } from '@/pages/browse-events'
 import { CreateEventPage } from '@/pages/create-event'
 import { EditEventPage } from '@/pages/edit-event'
 import { LoginPage } from '@/pages/login'
@@ -33,7 +34,7 @@ export const router = createBrowserRouter([
           { path: 'login', element: <LoginPage /> },
 
           // Discovery, registration, checkout (4.3.1, 4.4, 4.6)
-          { path: 'events', element: page('Browse Events') },
+          { path: 'events', element: <BrowseEventsPage /> },
           { path: 'events/:eventId', element: page('Event Details') },
           { path: 'events/:eventId/seats', element: page('Seat Selection') },
           { path: 'events/:eventId/checkout', element: page('Checkout') },

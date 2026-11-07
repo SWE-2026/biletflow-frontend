@@ -98,3 +98,71 @@ export function formatDateTime(
     ),
   )
 }
+
+// Calendar labels. Kazakh again comes from our own tables (see the note above numberTag).
+
+const KAZAKH_MONTHS_FULL = [
+  'Қаңтар',
+  'Ақпан',
+  'Наурыз',
+  'Сәуір',
+  'Мамыр',
+  'Маусым',
+  'Шілде',
+  'Тамыз',
+  'Қыркүйек',
+  'Қазан',
+  'Қараша',
+  'Желтоқсан',
+]
+
+const KAZAKH_WEEKDAYS = ['Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб', 'Жс']
+
+const capitalize = (value: string) => value.charAt(0).toLocaleUpperCase() + value.slice(1)
+
+// Calendar dates are plain days, so format them at UTC midnight to avoid any zone shift
+const utcDate = (year: number, monthIndex: number, day: number) =>
+  new Date(Date.UTC(year, monthIndex, day))
+
+/** "December 2026" for a calendar header. `monthIndex` is 0–11. */
+export function formatMonthYear(year: number, monthIndex: number, locale: Locale): string {
+  if (locale === 'kk') return `${KAZAKH_MONTHS_FULL[monthIndex]} ${year}`
+  const text = new Intl.DateTimeFormat(toIntlLocale(locale), {
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(utcDate(year, monthIndex, 1))
+  return capitalize(text)
+}
+
+/** Short weekday names, Monday first (the convention in Kazakhstan). */
+export function weekdayNames(locale: Locale): string[] {
+  if (locale === 'kk') return KAZAKH_WEEKDAYS
+  const format = new Intl.DateTimeFormat(toIntlLocale(locale), { weekday: 'short', timeZone: 'UTC' })
+  // 1 January 2024 was a Monday
+  return Array.from({ length: 7 }, (_, i) => capitalize(format.format(utcDate(2024, 0, 1 + i))))
+}
+
+/**
+ * Formats a calendar day given as `YYYY-MM-DD`: "20 Dec" (or "20 Dec 2026" with `withYear`),
+ * or the full date for screen readers with `long`.
+ */
+export function formatCalendarDate(
+  ymd: string,
+  locale: Locale,
+  { withYear = false, long = false }: { withYear?: boolean; long?: boolean } = {},
+): string {
+  const [year, month, day] = ymd.split('-').map(Number)
+  if (!year || !month || !day) return ''
+  if (locale === 'kk') {
+    const monthName = long ? KAZAKH_MONTHS_FULL[month - 1].toLocaleLowerCase() : KAZAKH_MONTHS[month - 1]
+    return withYear || long ? `${year} ж. ${day} ${monthName}` : `${day} ${monthName}`
+  }
+  return new Intl.DateTimeFormat(toIntlLocale(locale), {
+    day: 'numeric',
+    month: long ? 'long' : 'short',
+    year: withYear || long ? 'numeric' : undefined,
+    weekday: long ? 'long' : undefined,
+    timeZone: 'UTC',
+  }).format(utcDate(year, month - 1, day))
+}

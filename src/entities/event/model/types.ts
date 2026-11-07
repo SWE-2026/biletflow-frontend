@@ -3,6 +3,9 @@ export type EventStatus = 'draft' | 'published' | 'cancelled' | 'suspended'
 
 export type EventVisibility = 'public' | 'unlisted' | 'private'
 
+/** Computed by the API on each read from the event's times and status. */
+export type EventPhase = 'upcoming' | 'active' | 'completed' | 'cancelled'
+
 export type Event = {
   id: string
   organizerId: string
@@ -16,6 +19,7 @@ export type Event = {
   visibility: EventVisibility
   capacity: number
   status: EventStatus
+  phase: EventPhase
   startsAt: string
   endsAt: string
   registrationOpensAt: string | null

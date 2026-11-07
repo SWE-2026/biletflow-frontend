@@ -14,6 +14,8 @@ export const useEventMessages = createMessages({
     visibilityHint_private: 'Only you can see it.',
     when: 'When',
     where: 'Where',
+    phase_active: 'Happening now',
+    phase_completed: 'Ended',
   },
   ru: {
     status_draft: 'Черновик',
@@ -28,6 +30,8 @@ export const useEventMessages = createMessages({
     visibilityHint_private: 'Видно только вам.',
     when: 'Когда',
     where: 'Где',
+    phase_active: 'Идёт сейчас',
+    phase_completed: 'Завершено',
   },
   kk: {
     status_draft: 'Жоба',
@@ -42,5 +46,7 @@ export const useEventMessages = createMessages({
     visibilityHint_private: 'Оны тек сіз көресіз.',
     when: 'Қашан',
     where: 'Қайда',
+    phase_active: 'Қазір өтуде',
+    phase_completed: 'Аяқталды',
   },
 })
