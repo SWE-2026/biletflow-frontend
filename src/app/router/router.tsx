@@ -1,4 +1,5 @@
 import { createBrowserRouter } from 'react-router'
+import { AdminActivationsPage } from '@/pages/admin-activations'
 import { BrowseEventsPage } from '@/pages/browse-events'
 import { CheckoutPage } from '@/pages/checkout'
 import { CreateEventPage } from '@/pages/create-event'
@@ -138,7 +139,7 @@ export const router = createBrowserRouter([
               { path: 'orders', element: page('Orders') },
               { path: 'orders/:orderId', element: page('Order Details') },
               { path: 'payments', element: page('Payments') },
-              { path: 'activations', element: page('Paid Sales Activations') },
+              { path: 'activations', element: <AdminActivationsPage /> },
               { path: 'activations/:activationId', element: page('Activation Record') },
               { path: 'refunds', element: page('Refunds, Disputes & Failures') },
               { path: 'campaigns', element: page('Promo Code Activity') },
