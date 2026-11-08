@@ -9,6 +9,7 @@ import { MyTicketsPage } from '@/pages/my-tickets'
 import { LoginPage } from '@/pages/login'
 import { OrganizerDashboardPage } from '@/pages/organizer-dashboard'
 import { OrganizerEventPage } from '@/pages/organizer-event'
+import { TicketTypesPage } from '@/pages/organizer-ticket-types'
 import { OrderConfirmationPage } from '@/pages/order-confirmation'
 import { OrganizerProfilePage } from '@/pages/organizer-profile'
 import { TicketPage } from '@/pages/ticket'
@@ -97,7 +98,7 @@ export const router = createBrowserRouter([
                   { index: true, element: <OrganizerEventPage /> },
                   { path: 'edit', element: <EditEventPage /> },
                   { path: 'preview', element: page('Event Preview') },
-                  { path: 'tickets', element: page('Ticket Types') },
+                  { path: 'tickets', element: <TicketTypesPage /> },
                   { path: 'seating', element: page('Seating Layout') },
                   { path: 'activation', element: page('Paid Sales Activation') },
                   { path: 'attendees', element: page('Attendees') },
