@@ -1,12 +1,13 @@
 import { useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router'
 import { organizerEventApi, type Event } from '@/entities/event'
+import { paidSalesApi, type PaidSalesStatus } from '@/entities/paid-sales-activation'
 import type { TicketType } from '@/entities/ticket-type'
 import { ApiError, getErrorMessage } from '@/shared/api'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { Button } from '@/shared/ui/button'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
-import { ticketTypesApi, type PaidSalesStatus, type TicketTypeInput } from '../api/ticketTypesApi'
+import { ticketTypesApi, type TicketTypeInput } from '../api/ticketTypesApi'
 import { useTicketTypesMessages } from '../i18n/messages'
 import {
   emptyTicketTypeForm,
@@ -25,7 +26,7 @@ const load = async (eventId: string, signal: AbortSignal): Promise<PageData> => 
     organizerEventApi.get(eventId, signal),
     ticketTypesApi.list(eventId, signal),
     // The notice is a hint; the page still works if this one call fails
-    ticketTypesApi.paidSalesStatus(eventId, signal).catch(() => null),
+    paidSalesApi.get(eventId, signal).then((ps) => ps.status, () => null),
   ])
   return { event, ticketTypes, paidSales }
 }
@@ -94,7 +95,7 @@ export function TicketTypesPage() {
     setEditing(null)
     setData({ ...state.data, ticketTypes: next })
     if (input.priceAmount === 0) return
-    const status = await ticketTypesApi.paidSalesStatus(eventId).catch(() => paidSales)
+    const status = await paidSalesApi.get(eventId).then((ps) => ps.status, () => paidSales)
     setData({ event, ticketTypes: next, paidSales: status })
   }
 

@@ -13,8 +13,6 @@ export type TicketTypeInput = {
   sortOrder: number
 }
 
-export type PaidSalesStatus = 'inactive' | 'pending' | 'active' | 'rejected' | 'suspended'
-
 type TicketTypeResponse = { ticketType: TicketType }
 
 const typesPath = (eventId: string) => `/organizer/events/${encodeURIComponent(eventId)}/ticket-types`
@@ -39,10 +37,4 @@ export const ticketTypesApi = {
 
   remove: (eventId: string, typeId: string) =>
     apiRequest<void>(typePath(eventId, typeId), { method: 'DELETE' }),
-
-  paidSalesStatus: (eventId: string, signal?: AbortSignal) =>
-    apiRequest<{ paidSales: { status: PaidSalesStatus } }>(
-      `/organizer/events/${encodeURIComponent(eventId)}/paid-sales`,
-      { signal },
-    ).then((r) => r.paidSales.status),
 }
