@@ -2,6 +2,8 @@ import { createMessages } from '@/shared/i18n'
 
 export const useOrganizerEventMessages = createMessages({
   en: {
+    duplicateEvent: 'Duplicate event',
+    duplicateHint: 'Create a new draft with the same details and ticket types. Review the copied event dates before publishing. Registration and ticket sales windows are cleared; attendees, orders and other event activity are not copied.',
     loading: 'Loading event…',
     notFound: 'Event not found',
     notFoundHint: 'It may have been removed, or it belongs to another organizer.',
@@ -35,6 +37,8 @@ export const useOrganizerEventMessages = createMessages({
     invalid_event_state: 'The event changed in the meantime. Its current status is shown above.',
   },
   ru: {
+    duplicateEvent: 'Дублировать мероприятие',
+    duplicateHint: 'Создайте новый черновик с теми же данными и типами билетов. Проверьте скопированные даты перед публикацией. Периоды регистрации и продажи билетов сбрасываются; участники, заказы и другая активность не копируются.',
     loading: 'Загружаем мероприятие…',
     notFound: 'Мероприятие не найдено',
     notFoundHint: 'Возможно, оно удалено или принадлежит другому организатору.',
@@ -67,6 +71,8 @@ export const useOrganizerEventMessages = createMessages({
     invalid_event_state: 'Мероприятие уже изменилось. Его текущий статус показан выше.',
   },
   kk: {
+    duplicateEvent: 'Іс-шараның көшірмесін жасау',
+    duplicateHint: 'Деректері мен билет түрлері бірдей жаңа жоба жасаңыз. Жарияламас бұрын көшірілген күндерді тексеріңіз. Тіркелу және билет сату мерзімдері тазартылады; қатысушылар, тапсырыстар және басқа әрекеттер көшірілмейді.',
     loading: 'Іс-шара жүктелуде…',
     notFound: 'Іс-шара табылмады',
     notFoundHint: 'Ол жойылған немесе басқа ұйымдастырушыға тиесілі болуы мүмкін.',

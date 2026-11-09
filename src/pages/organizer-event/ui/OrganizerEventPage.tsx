@@ -13,6 +13,7 @@ import { useAsyncData } from '@/shared/lib/async-data'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { useOrganizerEventMessages, type OrganizerEventMessages } from '../i18n/messages'
 import { StatusActions } from './StatusActions'
+import { DuplicateEvent } from './DuplicateEvent'
 
 function registrationWindow(event: Event, t: OrganizerEventMessages, locale: Locale): string {
   const format = (iso: string | null) => iso && formatEventTime(iso, event.timezone, locale)
@@ -87,6 +88,7 @@ export function OrganizerEventPage() {
         <EventStatusBadge status={event.status} />
       </div>
       <StatusActions event={event} onChange={setData} onStale={refresh} />
+      <DuplicateEvent key={event.id} eventId={event.id} />
       <section className="space-y-3">
         <h2 className="text-lg font-semibold text-gray-900">{t.details}</h2>
         <EventDetails event={event} />

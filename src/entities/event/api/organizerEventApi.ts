@@ -27,4 +27,6 @@ export const organizerEventApi = {
   publish: (id: string) => transition(id, 'publish'),
   unpublish: (id: string) => transition(id, 'unpublish'),
   cancel: (id: string) => transition(id, 'cancel'),
+  duplicate: (id: string) =>
+    apiRequest<EventResponse>(`${eventPath(id)}/duplicate`, { method: 'POST' }).then((r) => r.event),
 }
