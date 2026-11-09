@@ -12,6 +12,10 @@ import { OrganizerDashboardPage } from '@/pages/organizer-dashboard'
 import { OrganizerEventPage } from '@/pages/organizer-event'
 import { PaidSalesPage } from '@/pages/organizer-paid-sales'
 import { TicketTypesPage } from '@/pages/organizer-ticket-types'
+import { OrganizerStaffPage } from '@/pages/organizer-staff'
+import { CampaignsPage } from '@/pages/organizer-campaigns'
+import { SupportCasesPage, NewSupportCasePage } from '@/pages/support-cases'
+import { SupportCaseDetailPage } from '@/pages/support-case-detail'
 import { OrderConfirmationPage } from '@/pages/order-confirmation'
 import { OrganizerProfilePage } from '@/pages/organizer-profile'
 import { TicketPage } from '@/pages/ticket'
@@ -70,9 +74,9 @@ export const router = createBrowserRouter([
               { path: 'orders/:orderId', element: page('Order Details') },
               { path: 'tickets', element: <MyTicketsPage /> },
               { path: 'tickets/:ticketId', element: <TicketPage /> },
-              { path: 'support', element: page('My Support Cases') },
-              { path: 'support/new', element: page('New Support Case') },
-              { path: 'support/:caseId', element: page('Support Case') },
+              { path: 'support', element: <SupportCasesPage scope="attendee" /> },
+              { path: 'support/new', element: <NewSupportCasePage scope="attendee" /> },
+              { path: 'support/:caseId', element: <SupportCaseDetailPage /> },
             ],
           },
         ],
@@ -90,9 +94,9 @@ export const router = createBrowserRouter([
             children: [
               { index: true, element: <OrganizerDashboardPage /> },
               { path: 'events/new', element: <CreateEventPage /> },
-              { path: 'support', element: page('Platform Support Cases') },
-              { path: 'support/new', element: page('New Platform Support Case') },
-              { path: 'support/:caseId', element: page('Platform Support Case') },
+              { path: 'support', element: <SupportCasesPage scope="organizer_platform" /> },
+              { path: 'support/new', element: <NewSupportCasePage scope="organizer_platform" /> },
+              { path: 'support/:caseId', element: <SupportCaseDetailPage /> },
               {
                 path: 'events/:eventId',
                 handle: organizerEventHandle,
@@ -106,14 +110,12 @@ export const router = createBrowserRouter([
                   { path: 'attendees', element: page('Attendees') },
                   { path: 'orders', element: page('Orders') },
                   { path: 'orders/:orderId', element: page('Order Details') },
-                  { path: 'campaigns', element: page('Promo Campaigns') },
-                  { path: 'campaigns/new', element: page('New Campaign') },
-                  { path: 'campaigns/:campaignId', element: page('Campaign Details') },
-                  { path: 'staff', element: page('Event Admins') },
+                  { path: 'campaigns', element: <CampaignsPage /> },
+                  { path: 'staff', element: <OrganizerStaffPage /> },
                   { path: 'analytics', element: page('Analytics') },
                   { path: 'history', element: page('Activity Timeline') },
-                  { path: 'support', element: page('Attendee Support Cases') },
-                  { path: 'support/:caseId', element: page('Attendee Support Case') },
+                  { path: 'support', element: <SupportCasesPage scope="organizer_event" /> },
+                  { path: 'support/:caseId', element: <SupportCaseDetailPage /> },
                 ],
               },
             ],
@@ -143,8 +145,8 @@ export const router = createBrowserRouter([
               { path: 'activations/:activationId', element: page('Activation Record') },
               { path: 'refunds', element: page('Refunds, Disputes & Failures') },
               { path: 'campaigns', element: page('Promo Code Activity') },
-              { path: 'support', element: page('Escalated Support Cases') },
-              { path: 'support/:caseId', element: page('Support Case') },
+              { path: 'support', element: <SupportCasesPage scope="admin" /> },
+              { path: 'support/:caseId', element: <SupportCaseDetailPage /> },
               { path: 'reports', element: page('Operational Reports') },
               { path: 'settings', element: page('Platform Settings') },
             ],
