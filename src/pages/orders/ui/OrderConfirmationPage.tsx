@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Link, useParams } from 'react-router'
 import { formatEventSchedule } from '@/entities/event'
 import { getMyOrder, OrderStatusBadge, type Order } from '@/entities/order'
@@ -7,51 +7,16 @@ import { TicketPrice } from '@/entities/ticket-type'
 import { ApiError, getErrorMessage } from '@/shared/api'
 import { useLocale } from '@/shared/i18n'
 import { useAsyncData } from '@/shared/lib/async-data'
-import { saveBlob } from '@/shared/lib/download'
-import { Button } from '@/shared/ui/button'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
-import { getOrderTicketsPdf } from '../api/orderApi'
-import { useConfirmationMessages } from '../i18n/messages'
-
-/** A short, readable reference; the full ID is on the printed ticket. */
-const shortId = (id: string) => id.slice(0, 8).toUpperCase()
+import { useConfirmationMessages } from '../i18n/confirmationMessages'
+import { shortId } from '../lib/format'
+import { DownloadTicketsButton } from './DownloadTicketsButton'
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="grid gap-1 px-5 py-3 sm:grid-cols-3">
       <dt className="text-sm font-medium text-gray-900">{label}</dt>
       <dd className="text-sm text-gray-600 sm:col-span-2">{children}</dd>
-    </div>
-  )
-}
-
-function DownloadTickets({ orderId }: { orderId: string }) {
-  const t = useConfirmationMessages()
-  const [pending, setPending] = useState(false)
-  const [error, setError] = useState<string>()
-
-  const download = async () => {
-    setPending(true)
-    setError(undefined)
-    try {
-      saveBlob(await getOrderTicketsPdf(orderId), `biletflow-tickets-${shortId(orderId)}.pdf`)
-    } catch (err) {
-      setError(getErrorMessage(err, { ticket_not_printable: t.ticket_not_printable }))
-    }
-    setPending(false)
-  }
-
-  return (
-    <div className="space-y-2">
-      <Button loading={pending} onClick={() => void download()}>
-        {pending ? t.downloading : t.downloadPdf}
-      </Button>
-      {error && (
-        <p role="alert" className="text-sm text-red-700">
-          <span aria-hidden="true">⚠ </span>
-          {error}
-        </p>
-      )}
     </div>
   )
 }
@@ -181,7 +146,7 @@ function Confirmation({ order, tickets }: { order: Order; tickets: Ticket[] }) {
         )}
         {hasValidTicket && (
           <div className="space-y-2">
-            <DownloadTickets orderId={order.id} />
+            <DownloadTicketsButton orderId={order.id} />
             <p className="text-sm text-gray-600">{t.printHint}</p>
           </div>
         )}

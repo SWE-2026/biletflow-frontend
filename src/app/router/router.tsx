@@ -16,7 +16,7 @@ import { OrganizerStaffPage } from '@/pages/organizer-staff'
 import { CampaignsPage } from '@/pages/organizer-campaigns'
 import { SupportCasesPage, NewSupportCasePage } from '@/pages/support-cases'
 import { SupportCaseDetailPage } from '@/pages/support-case-detail'
-import { OrderConfirmationPage } from '@/pages/order-confirmation'
+import { MyOrdersPage, OrderConfirmationPage, OrderDetailsPage } from '@/pages/orders'
 import { OrganizerProfilePage } from '@/pages/organizer-profile'
 import { TicketPage } from '@/pages/ticket'
 import { PlaceholderPage } from '@/shared/ui/placeholder-page'
@@ -70,8 +70,8 @@ export const router = createBrowserRouter([
             element: <RequireSession />,
             children: [
               { index: true, element: page('My Account') },
-              { path: 'orders', element: page('My Orders') },
-              { path: 'orders/:orderId', element: page('Order Details') },
+              { path: 'orders', element: <MyOrdersPage /> },
+              { path: 'orders/:orderId', element: <OrderDetailsPage /> },
               { path: 'tickets', element: <MyTicketsPage /> },
               { path: 'tickets/:ticketId', element: <TicketPage /> },
               { path: 'support', element: <SupportCasesPage scope="attendee" /> },
