@@ -1,0 +1,43 @@
+import { createMessages } from '@/shared/i18n'
+
+export const useAdminReportsMessages = createMessages({
+  en: {
+    title: 'Operational reports',
+    intro: 'Download platform records as CSV for reconciliation and review. Money is whole KZT and times are UTC. All amounts are demo transactions.',
+    kind_orders: 'Orders',
+    kind_payments: 'Payments',
+    kind_refunds: 'Refunds',
+    hint_orders: 'Every order with buyer, event, totals, discounts, fees and status.',
+    hint_payments: 'Every demo payment attempt, successful and failed.',
+    hint_refunds: 'Every demo refund with its reason and who issued it.',
+    download: 'Download CSV',
+    limit: 'Up to 10,000 most recent rows.',
+    downloaded: (name: string) => `${name} downloaded.`,
+  },
+  ru: {
+    title: 'Операционные отчёты',
+    intro: 'Скачайте записи платформы в CSV для сверки и проверки. Суммы в целых тенге, время в UTC. Все суммы демонстрационные.',
+    kind_orders: 'Заказы',
+    kind_payments: 'Платежи',
+    kind_refunds: 'Возвраты',
+    hint_orders: 'Все заказы: покупатель, мероприятие, суммы, скидки, сборы и статус.',
+    hint_payments: 'Все попытки демо-оплаты, успешные и неуспешные.',
+    hint_refunds: 'Все демо-возвраты с причиной и автором.',
+    download: 'Скачать CSV',
+    limit: 'До 10 000 последних строк.',
+    downloaded: (name) => `${name}: файл скачан.`,
+  },
+  kk: {
+    title: 'Операциялық есептер',
+    intro: 'Платформа жазбаларын салыстыру және тексеру үшін CSV түрінде жүктеп алыңыз. Сомалар бүтін теңгемен, уақыт UTC бойынша. Барлық сомалар демо.',
+    kind_orders: 'Тапсырыстар',
+    kind_payments: 'Төлемдер',
+    kind_refunds: 'Қайтарулар',
+    hint_orders: 'Барлық тапсырыстар: сатып алушы, іс-шара, сомалар, жеңілдіктер, алымдар және күйі.',
+    hint_payments: 'Барлық демо төлем әрекеттері, сәтті және сәтсіз.',
+    hint_refunds: 'Барлық демо қайтарулар, себебі және кім жасағаны.',
+    download: 'CSV жүктеп алу',
+    limit: 'Соңғы 10 000 жолға дейін.',
+    downloaded: (name) => `${name}: файл жүктелді.`,
+  },
+})

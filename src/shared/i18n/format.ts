@@ -176,3 +176,5 @@ export function formatCalendarDate(
     timeZone: 'UTC',
   }).format(utcDate(year, month - 1, day))
 }
+
+export const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone

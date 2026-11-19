@@ -1,5 +1,16 @@
 import { createBrowserRouter } from 'react-router'
-import { AdminActivationsPage } from '@/pages/admin-activations'
+import { AccountPage } from '@/pages/account'
+import { ActivationRecordPage, AdminActivationsPage } from '@/pages/admin/activations'
+import { AdminCampaignsPage } from '@/pages/admin/campaigns'
+import { AdminDashboardPage } from '@/pages/admin/dashboard'
+import { AdminEventDetailsPage, AdminEventsPage } from '@/pages/admin/events'
+import { AdminModerationPage } from '@/pages/admin/moderation'
+import { AdminOrderDetailsPage, AdminOrdersPage } from '@/pages/admin/orders'
+import { AdminPaymentsPage } from '@/pages/admin/payments'
+import { AdminRefundsPage } from '@/pages/admin/refunds'
+import { AdminReportsPage } from '@/pages/admin/reports'
+import { AdminSettingsPage } from '@/pages/admin/settings'
+import { AdminUserDetailsPage, AdminUsersPage } from '@/pages/admin/users'
 import { BrowseEventsPage } from '@/pages/browse-events'
 import { CheckoutPage } from '@/pages/checkout'
 import { CreateEventPage } from '@/pages/create-event'
@@ -8,16 +19,21 @@ import { EventDetailsPage } from '@/pages/event-details'
 import { HomePage } from '@/pages/home'
 import { MyTicketsPage } from '@/pages/my-tickets'
 import { LoginPage } from '@/pages/login'
-import { OrganizerDashboardPage } from '@/pages/organizer-dashboard'
-import { OrganizerEventPage } from '@/pages/organizer-event'
-import { PaidSalesPage } from '@/pages/organizer-paid-sales'
-import { TicketTypesPage } from '@/pages/organizer-ticket-types'
-import { OrganizerStaffPage } from '@/pages/organizer-staff'
-import { CampaignsPage } from '@/pages/organizer-campaigns'
+import { OrganizerDashboardPage } from '@/pages/organizer/dashboard'
+import { OrganizerEventPage } from '@/pages/organizer/event'
+import { PaidSalesPage } from '@/pages/organizer/paid-sales'
+import { TicketTypesPage } from '@/pages/organizer/ticket-types'
+import { OrganizerStaffPage } from '@/pages/organizer/staff'
+import { CampaignsPage } from '@/pages/organizer/campaigns'
 import { SupportCasesPage, NewSupportCasePage } from '@/pages/support-cases'
 import { SupportCaseDetailPage } from '@/pages/support-case-detail'
 import { MyOrdersPage, OrderConfirmationPage, OrderDetailsPage } from '@/pages/orders'
-import { OrganizerProfilePage } from '@/pages/organizer-profile'
+import { OrganizerAnalyticsPage } from '@/pages/organizer/analytics'
+import { OrganizerAttendeesPage } from '@/pages/organizer/attendees'
+import { OrganizerEventPreviewPage } from '@/pages/organizer/event-preview'
+import { OrganizerHistoryPage } from '@/pages/organizer/history'
+import { OrganizerOrderDetailsPage, OrganizerOrdersPage } from '@/pages/organizer/orders'
+import { OrganizerProfilePage } from '@/pages/organizer/profile'
 import { TicketPage } from '@/pages/ticket'
 import { PlaceholderPage } from '@/shared/ui/placeholder-page'
 import { AppLayout } from '../layouts/AppLayout'
@@ -69,7 +85,7 @@ export const router = createBrowserRouter([
             path: 'account',
             element: <RequireSession />,
             children: [
-              { index: true, element: page('My Account') },
+              { index: true, element: <AccountPage /> },
               { path: 'orders', element: <MyOrdersPage /> },
               { path: 'orders/:orderId', element: <OrderDetailsPage /> },
               { path: 'tickets', element: <MyTicketsPage /> },
@@ -103,17 +119,17 @@ export const router = createBrowserRouter([
                 children: [
                   { index: true, element: <OrganizerEventPage /> },
                   { path: 'edit', element: <EditEventPage /> },
-                  { path: 'preview', element: page('Event Preview') },
+                  { path: 'preview', element: <OrganizerEventPreviewPage /> },
                   { path: 'tickets', element: <TicketTypesPage /> },
                   { path: 'seating', element: page('Seating Layout') },
                   { path: 'activation', element: <PaidSalesPage /> },
-                  { path: 'attendees', element: page('Attendees') },
-                  { path: 'orders', element: page('Orders') },
-                  { path: 'orders/:orderId', element: page('Order Details') },
+                  { path: 'attendees', element: <OrganizerAttendeesPage /> },
+                  { path: 'orders', element: <OrganizerOrdersPage /> },
+                  { path: 'orders/:orderId', element: <OrganizerOrderDetailsPage /> },
                   { path: 'campaigns', element: <CampaignsPage /> },
                   { path: 'staff', element: <OrganizerStaffPage /> },
-                  { path: 'analytics', element: page('Analytics') },
-                  { path: 'history', element: page('Activity Timeline') },
+                  { path: 'analytics', element: <OrganizerAnalyticsPage /> },
+                  { path: 'history', element: <OrganizerHistoryPage /> },
                   { path: 'support', element: <SupportCasesPage scope="organizer_event" /> },
                   { path: 'support/:caseId', element: <SupportCaseDetailPage /> },
                 ],
@@ -132,23 +148,23 @@ export const router = createBrowserRouter([
           {
             element: <RequireAdmin />,
             children: [
-              { index: true, element: page('Admin Dashboard') },
-              { path: 'users', element: page('Users') },
-              { path: 'users/:userId', element: page('User Details') },
-              { path: 'events', element: page('Events') },
-              { path: 'events/:eventId', element: page('Event Details') },
-              { path: 'moderation', element: page('Reported Events') },
-              { path: 'orders', element: page('Orders') },
-              { path: 'orders/:orderId', element: page('Order Details') },
-              { path: 'payments', element: page('Payments') },
+              { index: true, element: <AdminDashboardPage /> },
+              { path: 'users', element: <AdminUsersPage /> },
+              { path: 'users/:userId', element: <AdminUserDetailsPage /> },
+              { path: 'events', element: <AdminEventsPage /> },
+              { path: 'events/:eventId', element: <AdminEventDetailsPage /> },
+              { path: 'moderation', element: <AdminModerationPage /> },
+              { path: 'orders', element: <AdminOrdersPage /> },
+              { path: 'orders/:orderId', element: <AdminOrderDetailsPage /> },
+              { path: 'payments', element: <AdminPaymentsPage /> },
               { path: 'activations', element: <AdminActivationsPage /> },
-              { path: 'activations/:activationId', element: page('Activation Record') },
-              { path: 'refunds', element: page('Refunds, Disputes & Failures') },
-              { path: 'campaigns', element: page('Promo Code Activity') },
+              { path: 'activations/:activationId', element: <ActivationRecordPage /> },
+              { path: 'refunds', element: <AdminRefundsPage /> },
+              { path: 'campaigns', element: <AdminCampaignsPage /> },
               { path: 'support', element: <SupportCasesPage scope="admin" /> },
               { path: 'support/:caseId', element: <SupportCaseDetailPage /> },
-              { path: 'reports', element: page('Operational Reports') },
-              { path: 'settings', element: page('Platform Settings') },
+              { path: 'reports', element: <AdminReportsPage /> },
+              { path: 'settings', element: <AdminSettingsPage /> },
             ],
           },
         ],

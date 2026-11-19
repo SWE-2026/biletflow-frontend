@@ -10,8 +10,8 @@ import { getMyDisputes } from '../api/disputeApi'
 import { useMyOrdersMessages } from '../i18n/myOrdersMessages'
 import { disputeByOrder } from '../lib/disputeByOrder'
 import { browserTimeZone, shortId } from '../lib/format'
-import type { Dispute } from '../model/dispute'
-import { DisputeStatusBadge } from './DisputeStatusBadge'
+import type { Dispute } from '@/entities/dispute'
+import { DisputeStatusBadge } from '@/entities/dispute'
 
 function OrderCard({ order, dispute, now }: { order: Order; dispute?: Dispute; now: number }) {
   const t = useMyOrdersMessages()

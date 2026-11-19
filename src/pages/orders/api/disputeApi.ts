@@ -1,6 +1,6 @@
 import { myOrderPath } from '@/entities/order'
 import { apiRequest } from '@/shared/api'
-import type { Dispute, DisputeReason } from '../model/dispute'
+import type { Dispute, DisputeReason } from '@/entities/dispute'
 
 /** The current user's disputes, open and resolved. */
 export const getMyDisputes = (signal?: AbortSignal) =>

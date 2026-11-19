@@ -12,9 +12,9 @@ import { getMyDisputes } from '../api/disputeApi'
 import { useOrderDetailsMessages } from '../i18n/orderDetailsMessages'
 import { disputeByOrder } from '../lib/disputeByOrder'
 import { browserTimeZone, shortId } from '../lib/format'
-import type { Dispute } from '../model/dispute'
+import type { Dispute } from '@/entities/dispute'
 import { DisputeSection } from './DisputeSection'
-import { DisputeStatusBadge } from './DisputeStatusBadge'
+import { DisputeStatusBadge } from '@/entities/dispute'
 import { DownloadTicketsButton } from './DownloadTicketsButton'
 
 const paymentSymbols = { succeeded: '✓', failed: '✕', refunded: '↺' } as const

@@ -2,6 +2,7 @@ export { createMessages, pickMessages } from './createMessages'
 export type { Dictionary, MessageShape } from './createMessages'
 export { getCommonMessages, useCommonMessages } from './commonMessages'
 export {
+  browserTimeZone,
   formatCalendarDate,
   formatCurrency,
   formatDateTime,

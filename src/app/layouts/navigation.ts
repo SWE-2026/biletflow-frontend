@@ -52,6 +52,7 @@ export const attendeeHandle: RouteHandle = {
       { to: '/account/tickets', label: t.myTickets },
       { to: '/account/orders', label: t.myOrders },
       { to: '/account/support', label: t.support },
+      { to: '/account', label: t.account, end: true },
     ],
   }),
 }
@@ -79,6 +80,7 @@ export const organizerEventHandle: RouteHandle = {
       items: [
         { to: base, label: t.overview, end: true },
         { to: `${base}/edit`, label: t.edit },
+        { to: `${base}/preview`, label: t.preview },
         { to: `${base}/tickets`, label: t.tickets },
         { to: `${base}/seating`, label: t.seating },
         { to: `${base}/activation`, label: t.paidSales },

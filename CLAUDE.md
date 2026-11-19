@@ -89,7 +89,9 @@ src/
 - **entities**: `user`, `organizer`, `event`, `venue`, `seat`, `ticket-type`, `order`, `ticket`, `payment`, `refund`, `campaign`, `support-case`, `audit-log`, `check-in`
 - **features** (verb-named): e.g. `auth-by-email`, `register-for-free-event`, `checkout`, `select-seat`, `apply-promo-code`, `activate-paid-sales`, `refund-order`, `cancel-registration`, `assign-event-admin`, `send-support-message`, `export-to-calendar`, `download-ticket-pdf`, `duplicate-event`, `suspend-event`
 - **widgets**: e.g. `seat-map`, `event-activity-timeline`, `organizer-sales-chart`, `ticket-inventory-summary`, `support-thread`
-- **pages**: one per route in `src/app/router/router.tsx` (e.g. `event-details`, `checkout`, `organizer-dashboard`, `admin-users`)
+- **pages**: one per route in `src/app/router/router.tsx` (e.g. `event-details`, `checkout`). Organizer and admin
+  pages are grouped in `pages/organizer/<slice>` and `pages/admin/<slice>` (e.g. `@/pages/admin/users`), so the
+  layer stays under Steiger's slice limit
 
 ### Routing
 

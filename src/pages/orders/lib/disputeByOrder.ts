@@ -1,4 +1,4 @@
-import type { Dispute } from '../model/dispute'
+import type { Dispute } from '@/entities/dispute'
 
 /** The dispute to show for each order: its open one (an order has at most one), else the latest. */
 export function disputeByOrder(disputes: Dispute[]): Map<string, Dispute> {

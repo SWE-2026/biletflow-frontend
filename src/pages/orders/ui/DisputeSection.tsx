@@ -1,5 +1,12 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router'
+import {
+  DISPUTE_REASONS,
+  DisputeStatusBadge,
+  useDisputeMessages,
+  type Dispute,
+  type DisputeReason,
+} from '@/entities/dispute'
 import type { Order } from '@/entities/order'
 import { TicketPrice } from '@/entities/ticket-type'
 import { getErrorMessage, getFieldError } from '@/shared/api'
@@ -8,11 +15,8 @@ import { Button } from '@/shared/ui/button'
 import { Select } from '@/shared/ui/select'
 import { TextArea } from '@/shared/ui/text-area'
 import { openDispute } from '../api/disputeApi'
-import { useDisputeMessages } from '../i18n/disputeMessages'
 import { useOrderDetailsMessages } from '../i18n/orderDetailsMessages'
 import { browserTimeZone } from '../lib/format'
-import { DISPUTE_REASONS, type Dispute, type DisputeReason } from '../model/dispute'
-import { DisputeStatusBadge } from './DisputeStatusBadge'
 
 function DisputeRecord({ dispute }: { dispute: Dispute }) {
   const t = useOrderDetailsMessages()
