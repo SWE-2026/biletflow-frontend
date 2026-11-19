@@ -40,6 +40,13 @@ export type SupportCase = {
 
 export type SupportMessageKind = 'message' | 'status_change' | 'assignment'
 
+export type SupportAttachment = {
+  id: string
+  fileName: string
+  contentType: string
+  sizeBytes: number
+}
+
 export type SupportMessage = {
   id: string
   kind: SupportMessageKind
@@ -47,6 +54,7 @@ export type SupportMessage = {
   authorName: string
   authorRole: ViewerRole
   body: string
+  attachments: SupportAttachment[]
   createdAt: string
 }
 

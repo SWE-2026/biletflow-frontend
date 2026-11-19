@@ -7,6 +7,7 @@ export type CheckoutInput = {
   /** Defaults to the account email on the server. */
   attendeeEmail?: string
   promoCode?: string
+  seatIds?: string[]
 }
 
 /**

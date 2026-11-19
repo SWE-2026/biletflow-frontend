@@ -14,8 +14,10 @@ export const useEventMessages = createMessages({
     visibilityHint_private: 'Only you can see it.',
     when: 'When',
     where: 'Where',
+    phase_upcoming: 'Upcoming',
     phase_active: 'Happening now',
     phase_completed: 'Ended',
+    phase_cancelled: 'Cancelled',
   },
   ru: {
     status_draft: 'Черновик',
@@ -30,8 +32,10 @@ export const useEventMessages = createMessages({
     visibilityHint_private: 'Видно только вам.',
     when: 'Когда',
     where: 'Где',
+    phase_upcoming: 'Предстоящее',
     phase_active: 'Идёт сейчас',
     phase_completed: 'Завершено',
+    phase_cancelled: 'Отменено',
   },
   kk: {
     status_draft: 'Жоба',
@@ -46,7 +50,9 @@ export const useEventMessages = createMessages({
     visibilityHint_private: 'Оны тек сіз көресіз.',
     when: 'Қашан',
     where: 'Қайда',
+    phase_upcoming: 'Алдағы',
     phase_active: 'Қазір өтуде',
     phase_completed: 'Аяқталды',
+    phase_cancelled: 'Тоқтатылды',
   },
 })

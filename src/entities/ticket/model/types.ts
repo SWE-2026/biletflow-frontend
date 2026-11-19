@@ -1,3 +1,5 @@
+import type { SeatLabel } from '@/entities/seat/@x/ticket'
+
 export type TicketStatus = 'valid' | 'used' | 'cancelled' | 'refunded'
 
 export type Ticket = {
@@ -21,4 +23,5 @@ export type Ticket = {
     startsAt: string
     endsAt: string
   }
+  seat: SeatLabel | null
 }

@@ -2,6 +2,8 @@ import { useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router'
 import { formatEventSchedule } from '@/entities/event'
 import { getMyTickets, TicketStatusBadge, type Ticket } from '@/entities/ticket'
+import { useSeatText } from '@/entities/seat'
+import { AddToCalendar } from '@/features/export-to-calendar'
 import { getErrorMessage } from '@/shared/api'
 import { useLocale } from '@/shared/i18n'
 import { useAsyncData } from '@/shared/lib/async-data'
@@ -87,6 +89,8 @@ function TicketView({ ticket }: { ticket: Ticket }) {
   const locale = useLocale()
   const { event } = ticket
   const valid = ticket.status === 'valid'
+  const [now] = useState(Date.now)
+  const { seatName } = useSeatText()
 
   return (
     <article className="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm md:flex">
@@ -123,6 +127,7 @@ function TicketView({ ticket }: { ticket: Ticket }) {
 
         <dl className="grid flex-1 content-start gap-4 px-6 py-6 sm:grid-cols-2">
           <Fact label={t.ticketType}>{ticket.ticketTypeName}</Fact>
+          {ticket.seat && <Fact label={t.seat}>{seatName(ticket.seat)}</Fact>}
           <Fact label={t.attendee}>{ticket.attendeeName}</Fact>
           <Fact label={t.when}>{formatEventSchedule(event, locale)}</Fact>
           <Fact label={t.where}>
@@ -137,6 +142,12 @@ function TicketView({ ticket }: { ticket: Ticket }) {
             {valid && <p className="mt-1 text-xs text-gray-500">{t.sameTicketHint}</p>}
           </div>
         </dl>
+
+        {(event.status === 'cancelled' || (valid && Date.parse(event.endsAt) > now)) && (
+          <div className="border-t border-gray-200 px-6 py-5">
+            <AddToCalendar event={event} />
+          </div>
+        )}
 
         <footer className="flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-gray-200 px-6 py-4 text-sm">
           {valid && <DownloadPdf ticket={ticket} />}

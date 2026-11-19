@@ -19,9 +19,12 @@ import { EventDetailsPage } from '@/pages/event-details'
 import { HomePage } from '@/pages/home'
 import { MyTicketsPage } from '@/pages/my-tickets'
 import { LoginPage } from '@/pages/login'
+import { NotFoundPage } from '@/pages/not-found'
+import { SeatSelectionPage } from '@/pages/seat-selection'
 import { OrganizerDashboardPage } from '@/pages/organizer/dashboard'
 import { OrganizerEventPage } from '@/pages/organizer/event'
 import { PaidSalesPage } from '@/pages/organizer/paid-sales'
+import { OrganizerSeatingPage } from '@/pages/organizer/seating'
 import { TicketTypesPage } from '@/pages/organizer/ticket-types'
 import { OrganizerStaffPage } from '@/pages/organizer/staff'
 import { CampaignsPage } from '@/pages/organizer/campaigns'
@@ -35,7 +38,6 @@ import { OrganizerHistoryPage } from '@/pages/organizer/history'
 import { OrganizerOrderDetailsPage, OrganizerOrdersPage } from '@/pages/organizer/orders'
 import { OrganizerProfilePage } from '@/pages/organizer/profile'
 import { TicketPage } from '@/pages/ticket'
-import { PlaceholderPage } from '@/shared/ui/placeholder-page'
 import { AppLayout } from '../layouts/AppLayout'
 import { RequireAdmin } from '../layouts/RequireAdmin'
 import { RequireOrganizer } from '../layouts/RequireOrganizer'
@@ -47,9 +49,6 @@ import {
   organizerEventHandle,
   organizerHandle,
 } from '../layouts/navigation'
-
-// TODO: replace each placeholder with a slice from @/pages as it gets implemented
-const page = (title: string) => <PlaceholderPage title={title} />
 
 export const router = createBrowserRouter([
   {
@@ -67,7 +66,7 @@ export const router = createBrowserRouter([
           // Discovery, registration, checkout (4.3.1, 4.4, 4.6)
           { path: 'events', element: <BrowseEventsPage /> },
           { path: 'events/:eventId', element: <EventDetailsPage /> },
-          { path: 'events/:eventId/seats', element: page('Seat Selection') },
+          { path: 'events/:eventId/seats', element: <SeatSelectionPage /> },
           {
             element: <RequireSession />,
             children: [
@@ -121,7 +120,7 @@ export const router = createBrowserRouter([
                   { path: 'edit', element: <EditEventPage /> },
                   { path: 'preview', element: <OrganizerEventPreviewPage /> },
                   { path: 'tickets', element: <TicketTypesPage /> },
-                  { path: 'seating', element: page('Seating Layout') },
+                  { path: 'seating', element: <OrganizerSeatingPage /> },
                   { path: 'activation', element: <PaidSalesPage /> },
                   { path: 'attendees', element: <OrganizerAttendeesPage /> },
                   { path: 'orders', element: <OrganizerOrdersPage /> },
@@ -170,7 +169,7 @@ export const router = createBrowserRouter([
         ],
       },
 
-      { path: '*', element: page('404 — Page Not Found') },
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ])

@@ -2,6 +2,10 @@ import { createMessages, plural } from '@/shared/i18n'
 
 export const useCheckoutMessages = createMessages({
   en: {
+    changeSeats: 'Change seats',
+    chooseSeats: 'Choose seats',
+    seat_unavailable: 'Some of your seats were just taken or are no longer for sale. Choose other seats.',
+    seat_selection_required: 'This event has assigned seating. Choose your seats on the seat map first.',
     title: 'Checkout',
     loading: 'Loading…',
     backToEvent: 'Back to the event',
@@ -78,6 +82,10 @@ export const useCheckoutMessages = createMessages({
     ticketCount: (count: number) => `${count} ${plural('en', count, { one: 'ticket', other: 'tickets' })}`,
   },
   ru: {
+    changeSeats: 'Изменить места',
+    chooseSeats: 'Выбрать места',
+    seat_unavailable: 'Часть выбранных мест только что заняли или сняли с продажи. Выберите другие места.',
+    seat_selection_required: 'На это мероприятие места назначаются. Сначала выберите места на схеме зала.',
     title: 'Оформление заказа',
     loading: 'Загрузка…',
     backToEvent: 'Вернуться к мероприятию',
@@ -152,6 +160,10 @@ export const useCheckoutMessages = createMessages({
       `${count} ${plural('ru', count, { one: 'билет', few: 'билета', other: 'билетов' })}`,
   },
   kk: {
+    changeSeats: 'Орындарды өзгерту',
+    chooseSeats: 'Орын таңдау',
+    seat_unavailable: 'Таңдалған орындардың бір бөлігін жаңа ғана алып қойды немесе сатудан алынды. Басқа орын таңдаңыз.',
+    seat_selection_required: 'Бұл іс-шарада орындар тағайындалады. Алдымен зал сызбасынан орын таңдаңыз.',
     title: 'Тапсырысты рәсімдеу',
     loading: 'Жүктелуде…',
     backToEvent: 'Іс-шараға оралу',
@@ -230,6 +242,8 @@ export type CheckoutMessages = ReturnType<typeof useCheckoutMessages>
 export const checkoutErrorMessages = (t: CheckoutMessages) => ({
   paid_sales_inactive: t.paid_sales_inactive,
   sold_out: t.sold_out,
+  seat_unavailable: t.seat_unavailable,
+  seat_selection_required: t.seat_selection_required,
   ticket_limit_reached: t.ticket_limit_reached,
   registration_closed: t.registration_closed,
   email_unverified: t.email_unverified,

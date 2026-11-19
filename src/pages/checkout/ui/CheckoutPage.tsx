@@ -1,7 +1,9 @@
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import { publicEventApi } from '@/entities/event'
 import type { Order } from '@/entities/order'
+import { getEventSeating } from '@/entities/seat'
 import { ApiError, getErrorMessage } from '@/shared/api'
+import { useTrackEvent } from '@/shared/lib/analytics'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { useCheckoutMessages } from '../i18n/messages'
@@ -45,13 +47,36 @@ function TicketStep({ eventId, onCheckout }: { eventId: string; onCheckout: (ord
   const { state, reload } = useAsyncData(`public-event:${eventId}`, (signal) =>
     publicEventApi.get(eventId, signal),
   )
+  const seating = useAsyncData(`event-seating:${eventId}`, (signal) => getEventSeating(eventId, signal))
+  useTrackEvent('begin_checkout', { event_id: eventId, coupon: searchParams.get('promo') ?? '' })
 
-  if (state.status === 'loading') return <LoadingState label={t.loading} />
+  if (state.status === 'loading' || seating.state.status === 'loading') return <LoadingState label={t.loading} />
+  if (seating.state.status === 'error')
+    return <ErrorState message={getErrorMessage(seating.state.error)} onRetry={seating.reload} />
   if (state.status === 'error')
     return state.error instanceof ApiError && state.error.status === 404 ? (
       <ErrorState title={t.notFound} message={t.notFoundHint} />
     ) : (
       <ErrorState message={getErrorMessage(state.error)} onRetry={reload} />
+    )
+
+  const seatIds = (searchParams.get('seats') ?? '').split(',')
+  const assigned = seating.state.data.mode === 'assigned'
+  const seats = assigned
+    ? seating.state.data.seats.filter((seat) => seat.status === 'available' && seatIds.includes(seat.id))
+    : null
+
+  if (seats && seats.length === 0)
+    return (
+      <div className="space-y-3 rounded-lg border border-gray-200 bg-white p-5 text-sm text-gray-700">
+        <p>{t.seat_selection_required}</p>
+        <Link
+          to={`/events/${eventId}/seats${searchParams.get('promo') ? `?promo=${encodeURIComponent(searchParams.get('promo') ?? '')}` : ''}`}
+          className="font-medium text-indigo-600 hover:text-indigo-700"
+        >
+          {t.chooseSeats}
+        </Link>
+      </div>
     )
 
   return (
@@ -61,6 +86,7 @@ function TicketStep({ eventId, onCheckout }: { eventId: string; onCheckout: (ord
         details={state.data}
         initialTypeId={searchParams.get('type')}
         initialPromoCode={searchParams.get('promo') ?? ''}
+        seats={seats}
         onCheckout={onCheckout}
       />
     </>

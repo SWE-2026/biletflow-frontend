@@ -1,4 +1,4 @@
-import { apiRequest } from '@/shared/api'
+import { apiRequest, apiRequestBlob } from '@/shared/api'
 import type {
   CreateSupportCaseInput,
   SupportCase,
@@ -34,11 +34,20 @@ export const supportApi = {
       body: input,
     }).then((r) => r.case),
 
-  sendMessage: (id: string, body: string) =>
-    apiRequest<{ case: SupportCase }>(`/support/cases/${encodeURIComponent(id)}/messages`, {
+  sendMessage: (id: string, body: string, files: File[] = []) => {
+    const form = new FormData()
+    form.set('body', body)
+    files.forEach((file) => form.append('files', file))
+    return apiRequest<{ case: SupportCase }>(`/support/cases/${encodeURIComponent(id)}/messages`, {
       method: 'POST',
-      body: { body },
-    }).then((r) => r.case),
+      body: files.length > 0 ? form : { body },
+    }).then((r) => r.case)
+  },
+
+  downloadAttachment: (caseId: string, attachmentId: string) =>
+    apiRequestBlob(
+      `/support/cases/${encodeURIComponent(caseId)}/attachments/${encodeURIComponent(attachmentId)}`,
+    ),
 
   updateStatus: (id: string, status: SupportStatus) =>
     apiRequest<{ case: SupportCase }>(`/support/cases/${encodeURIComponent(id)}/status`, {

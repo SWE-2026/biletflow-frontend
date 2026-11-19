@@ -17,7 +17,3 @@ export function formatEventSchedule(
   const ends = formatDateTime(endsAt, timezone, locale, sameDay ? 'time' : 'dateTime')
   return `${starts} – ${ends} (${timezone})`
 }
-
-export function hasEventEnded(event: Pick<Event, 'endsAt'>, now = Date.now()): boolean {
-  return Date.parse(event.endsAt) < now
-}

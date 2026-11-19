@@ -13,6 +13,8 @@ import { useAsyncData } from '@/shared/lib/async-data'
 import { Button } from '@/shared/ui/button'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { useSupportDetailMessages } from '../i18n/messages'
+import { fileProblem } from '../lib/files'
+import { AttachmentList, AttachmentPicker } from './Attachments'
 
 export function SupportCaseDetailPage() {
   const { caseId = '' } = useParams()
@@ -22,6 +24,7 @@ export function SupportCaseDetailPage() {
   const navigate = useNavigate()
 
   const [replyText, setReplyText] = useState('')
+  const [files, setFiles] = useState<File[]>([])
   const [sending, setSending] = useState(false)
   const [statusUpdating, setStatusUpdating] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
@@ -51,16 +54,17 @@ export function SupportCaseDetailPage() {
 
   const handleSendReply = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!replyText.trim()) return
+    if ((!replyText.trim() && files.length === 0) || fileProblem(files, t)) return
 
     setSending(true)
     setActionError(null)
     try {
-      await supportApi.sendMessage(caseId, replyText.trim())
+      await supportApi.sendMessage(caseId, replyText.trim(), files)
       setReplyText('')
+      setFiles([])
       reload()
-    } catch {
-      setActionError(t.errorSend)
+    } catch (err) {
+      setActionError(err instanceof ApiError && err.fields.files ? err.fields.files : t.errorSend)
     } finally {
       setSending(false)
     }
@@ -223,6 +227,7 @@ export function SupportCaseDetailPage() {
                 }`}
               >
                 {msg.body}
+                <AttachmentList caseId={caseId} attachments={msg.attachments} onDark={isMe} />
               </div>
             </div>
           )
@@ -238,7 +243,6 @@ export function SupportCaseDetailPage() {
           {t.replyTitle}
         </label>
         <textarea
-          required
           rows={3}
           maxLength={5000}
           value={replyText}
@@ -246,8 +250,9 @@ export function SupportCaseDetailPage() {
           placeholder={t.replyPlaceholder}
           className="mt-2 w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:border-indigo-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
         />
+        <AttachmentPicker files={files} onChange={setFiles} disabled={sending} />
         <div className="mt-3 flex justify-end">
-          <Button type="submit" disabled={sending || !replyText.trim()}>
+          <Button type="submit" disabled={sending || (!replyText.trim() && files.length === 0) || !!fileProblem(files, t)}>
             {sending ? t.sending : t.sendButton}
           </Button>
         </div>

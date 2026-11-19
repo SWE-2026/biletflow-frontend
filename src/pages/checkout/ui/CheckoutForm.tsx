@@ -1,4 +1,5 @@
 import { useEffect, useId, useState, type FormEvent, type ReactNode } from 'react'
+import { Link } from 'react-router'
 import {
   lookupPromo,
   promoErrorMessages,
@@ -8,6 +9,7 @@ import {
 } from '@/entities/campaign'
 import type { PublicEventDetails } from '@/entities/event'
 import type { Order } from '@/entities/order'
+import { SeatList, type Seat } from '@/entities/seat'
 import { getSaleState, TicketPrice, type TicketType } from '@/entities/ticket-type'
 import { useSession } from '@/entities/user'
 import { ApiError, getErrorMessage } from '@/shared/api'
@@ -36,6 +38,7 @@ type CheckoutFormProps = {
   initialTypeId: string | null
   /** Promo code to apply on load (from a campaign link). */
   initialPromoCode: string
+  seats: Seat[] | null
   onCheckout: (order: Order) => void
 }
 
@@ -61,6 +64,7 @@ export function CheckoutForm({
   details,
   initialTypeId,
   initialPromoCode,
+  seats,
   onCheckout,
 }: CheckoutFormProps) {
   const t = useCheckoutMessages()
@@ -116,7 +120,10 @@ export function CheckoutForm({
     (initialPromoError ? getErrorMessage(initialPromoError, promoMessages) : undefined)
 
   const picked = onSale
-    .map((type) => ({ type, quantity: quantities[type.id] ?? 0 }))
+    .map((type) => ({
+      type,
+      quantity: seats ? seats.filter((seat) => seat.ticketTypeId === type.id).length : (quantities[type.id] ?? 0),
+    }))
     .filter((line) => line.quantity > 0)
   const subtotal = picked.reduce((sum, line) => sum + line.type.priceAmount * line.quantity, 0)
 
@@ -142,7 +149,8 @@ export function CheckoutForm({
     setPending(true)
     try {
       const order = await startCheckout(event.id, {
-        items: picked.map((line) => ({ ticketTypeId: line.type.id, quantity: line.quantity })),
+        items: seats ? [] : picked.map((line) => ({ ticketTypeId: line.type.id, quantity: line.quantity })),
+        seatIds: seats?.map((seat) => seat.id),
         attendeeName: name,
         attendeeEmail: email || undefined,
         promoCode: promo?.code ?? (promoInput.trim() || undefined),
@@ -173,6 +181,20 @@ export function CheckoutForm({
     <form noValidate onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
         <Panel title={t.stepTickets}>
+          {seats ? (
+            <div className="space-y-3">
+              <SeatList seats={seats} />
+              <Link
+                to={`/events/${event.id}/seats?${new URLSearchParams({
+                  seats: seats.map((seat) => seat.id).join(','),
+                  ...(initialPromoCode ? { promo: initialPromoCode } : {}),
+                })}`}
+                className="inline-block text-sm font-medium text-indigo-600 hover:text-indigo-700"
+              >
+                {t.changeSeats}
+              </Link>
+            </div>
+          ) : (
           <ul className="divide-y divide-gray-200">
             {onSale.map((type) => {
               const options = Math.min(type.maxPerOrder, MAX_QUANTITY_OPTIONS)
@@ -202,6 +224,7 @@ export function CheckoutForm({
               )
             })}
           </ul>
+          )}
           {errors.items && <div className="mt-3"><ErrorText>{errors.items}</ErrorText></div>}
         </Panel>
 

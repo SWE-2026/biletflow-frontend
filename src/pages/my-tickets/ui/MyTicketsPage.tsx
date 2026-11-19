@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router'
 import { formatEventSchedule } from '@/entities/event'
+import { useSeatText } from '@/entities/seat'
 import { getMyTickets, TicketStatusBadge, type Ticket } from '@/entities/ticket'
 import { getErrorMessage } from '@/shared/api'
 import { useLocale } from '@/shared/i18n'
@@ -17,6 +18,7 @@ function TicketCard({ ticket }: { ticket: Ticket }) {
   const locale = useLocale()
   const { event } = ticket
   const usable = ticket.status === 'valid'
+  const { seatName } = useSeatText()
 
   return (
     <li className="flex">
@@ -50,6 +52,7 @@ function TicketCard({ ticket }: { ticket: Ticket }) {
             <dt className="text-xs font-medium tracking-wide text-gray-500 uppercase">{t.attendeeLabel}</dt>
             <dd className={`truncate text-sm font-medium ${usable ? 'text-gray-900' : ''}`}>
               {ticket.ticketTypeName}
+              {ticket.seat && <span className="block truncate text-xs font-normal text-gray-600">{seatName(ticket.seat)}</span>}
             </dd>
             <dd className={`truncate text-sm ${usable ? 'text-gray-900' : ''}`}>{ticket.attendeeName}</dd>
           </dl>

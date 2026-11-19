@@ -1,3 +1,5 @@
+import type { SeatLabel } from '@/entities/seat/@x/order'
+
 export type OrderStatus = 'pending' | 'paid' | 'cancelled' | 'refunded' | 'expired'
 
 /** A demo payment record: no money moves (`demo` is always true). */
@@ -14,6 +16,7 @@ export type OrderItem = {
   ticketTypeName: string
   quantity: number
   unitPriceAmount: number
+  seats: SeatLabel[]
 }
 
 /** Amounts are whole KZT and computed by the server; `totalAmount` = subtotal − discount. */

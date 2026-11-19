@@ -5,3 +5,5 @@ const rawApiUrl: string | undefined = import.meta.env.VITE_API_URL
  * `docker compose up` in biletflow-api.
  */
 export const apiUrl = (rawApiUrl || 'http://localhost:8080/api/v1').replace(/\/+$/, '')
+
+export const gaMeasurementId: string = import.meta.env.VITE_GA_MEASUREMENT_ID ?? ''

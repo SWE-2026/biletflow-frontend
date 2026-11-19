@@ -3,11 +3,9 @@ import { Link } from 'react-router'
 import {
   EventStatusBadge,
   formatEventSchedule,
-  hasEventEnded,
   organizerEventApi,
   type Event,
   useEventMessages,
-  type EventStatus,
 } from '@/entities/event'
 import { getErrorMessage } from '@/shared/api'
 import { formatNumber, useLocale } from '@/shared/i18n'
@@ -17,18 +15,31 @@ import { TextField } from '@/shared/ui/text-field'
 import { Button } from '@/shared/ui/button'
 import { useDashboardMessages } from '../i18n/messages'
 
-type Filter = 'all' | 'past' | EventStatus
+const FILTERS = ['all', 'draft', 'upcoming', 'active', 'completed', 'cancelled', 'suspended'] as const
 
-const FILTERS: Filter[] = ['all', 'draft', 'published', 'past', 'cancelled', 'suspended']
+type Filter = (typeof FILTERS)[number]
 
-const inFilter = (event: Event, filter: Filter) =>
-  filter === 'all' || (filter === 'past' ? event.phase === 'completed' : event.status === filter)
+const isLive = (event: Event) => event.status === 'published' || event.status === 'suspended'
+
+const inFilter = (event: Event, filter: Filter) => {
+  switch (filter) {
+    case 'all':
+      return true
+    case 'draft':
+    case 'suspended':
+      return event.status === filter
+    case 'cancelled':
+      return event.status === 'cancelled' || event.phase === 'cancelled'
+    default:
+      return isLive(event) && event.phase === filter
+  }
+}
 
 function EventRow({ event }: { event: Event }) {
   const t = useDashboardMessages()
   const eventText = useEventMessages()
   const locale = useLocale()
-  const ended = event.status !== 'cancelled' && hasEventEnded(event)
+  const showPhase = isLive(event) && event.phase !== 'cancelled'
 
   return (
     <li className="flex flex-wrap items-center gap-x-6 gap-y-2 px-5 py-4">
@@ -41,7 +52,9 @@ function EventRow({ event }: { event: Event }) {
             {event.title}
           </Link>
           <EventStatusBadge status={event.status} />
-          {ended && <span className="text-xs font-medium text-gray-500">{t.ended}</span>}
+          {showPhase && (
+            <span className="text-xs font-medium text-gray-600">{eventText[`phase_${event.phase}`]}</span>
+          )}
         </div>
         <p className="mt-1 text-sm text-gray-600">{formatEventSchedule(event, locale)}</p>
         <p className="mt-0.5 text-sm text-gray-500">
@@ -69,7 +82,17 @@ function EventRow({ event }: { event: Event }) {
 function EventList({ events }: { events: Event[] }) {
   const t = useDashboardMessages()
   const eventText = useEventMessages()
-  const filterLabel = (f: Filter) => (f === 'all' ? t.all : f === 'past' ? t.past : eventText[`status_${f}`])
+  const filterLabel = (f: Filter) => {
+    switch (f) {
+      case 'all':
+        return t.all
+      case 'draft':
+      case 'suspended':
+        return eventText[`status_${f}`]
+      default:
+        return eventText[`phase_${f}`]
+    }
+  }
   const [filter, setFilter] = useState<Filter>('all')
   const [search, setSearch] = useState('')
   const query = search.trim().toLocaleLowerCase()

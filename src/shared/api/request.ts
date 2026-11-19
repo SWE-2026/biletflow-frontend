@@ -40,7 +40,8 @@ function readFields(data: unknown): Record<string, string> {
 
 async function send(path: string, options: RequestOptions, accept: string): Promise<Response> {
   const headers: Record<string, string> = { Accept: accept }
-  if (options.body !== undefined) headers['Content-Type'] = 'application/json'
+  const isForm = options.body instanceof FormData
+  if (options.body !== undefined && !isForm) headers['Content-Type'] = 'application/json'
   const token = auth.getToken()
   if (token) headers.Authorization = `Bearer ${token}`
 
@@ -49,7 +50,7 @@ async function send(path: string, options: RequestOptions, accept: string): Prom
     response = await fetch(`${apiUrl}${path}`, {
       method: options.method ?? 'GET',
       headers,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      body: options.body instanceof FormData ? options.body : options.body === undefined ? undefined : JSON.stringify(options.body),
       signal: options.signal,
     })
   } catch (error) {

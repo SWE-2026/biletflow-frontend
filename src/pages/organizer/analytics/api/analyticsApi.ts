@@ -58,12 +58,14 @@ export type Analytics = {
 export type AnalyticsFilter = {
   ticketTypeId: string
   from: string | null
+  to: string | null
 }
 
 export const getAnalytics = (eventId: string, filter: AnalyticsFilter, signal?: AbortSignal) => {
   const params = new URLSearchParams()
   if (filter.ticketTypeId) params.set('ticketTypeId', filter.ticketTypeId)
   if (filter.from) params.set('from', filter.from)
+  if (filter.to) params.set('to', filter.to)
   const query = params.toString()
   return apiRequest<{ analytics: Analytics }>(
     `/organizer/events/${encodeURIComponent(eventId)}/analytics${query ? `?${query}` : ''}`,

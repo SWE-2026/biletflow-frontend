@@ -23,6 +23,7 @@ function TicketTypeRow({ event, ticketType, promo }: TicketTypeRowProps) {
     !isFree && promo && (promo.ticketTypeIds.length === 0 || promo.ticketTypeIds.includes(ticketType.id))
   const checkoutQuery = new URLSearchParams({ type: ticketType.id })
   if (promoApplies) checkoutQuery.set('promo', promo.code)
+  const seated = event.seatingMode === 'assigned'
 
   return (
     <li className="space-y-3 px-5 py-4">
@@ -48,6 +49,7 @@ function TicketTypeRow({ event, ticketType, promo }: TicketTypeRowProps) {
         )}
       </div>
       {state.kind === 'on_sale' &&
+        !seated &&
         (isFree ? (
           <RegisterForFreeEvent
             eventId={event.id}
@@ -66,8 +68,26 @@ function TicketTypeRow({ event, ticketType, promo }: TicketTypeRowProps) {
   )
 }
 
+function ChooseSeats({ event, promo }: { event: Event; promo: Promo | null }) {
+  const t = useEventDetailsMessages()
+  const query = promo ? `?${new URLSearchParams({ promo: promo.code })}` : ''
+
+  return (
+    <div className="space-y-2 border-t border-gray-200 px-5 py-4">
+      <p className="text-sm text-gray-600">{t.assignedSeating}</p>
+      <Link
+        to={`/events/${event.id}/seats${query}`}
+        className="inline-flex rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700"
+      >
+        {t.chooseSeats}
+      </Link>
+    </div>
+  )
+}
+
 export function TicketTypeList({ event, ticketTypes, promo }: TicketTypeListProps) {
   const t = useEventDetailsMessages()
+  const onSale = ticketTypes.some((type) => getSaleState(type, event).kind === 'on_sale')
 
   return (
     <section aria-labelledby="tickets-heading" className="rounded-lg border border-gray-200 bg-white">
@@ -84,6 +104,9 @@ export function TicketTypeList({ event, ticketTypes, promo }: TicketTypeListProp
             <TicketTypeRow key={ticketType.id} event={event} ticketType={ticketType} promo={promo} />
           ))}
         </ul>
+      )}
+      {event.seatingMode === 'assigned' && event.phase !== 'completed' && onSale && (
+        <ChooseSeats event={event} promo={promo} />
       )}
     </section>
   )

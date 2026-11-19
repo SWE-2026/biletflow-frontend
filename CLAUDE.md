@@ -27,6 +27,9 @@ Web app for BiletFlow, a self-service event ticketing platform for Kazakhstan (a
 - Use `apiRequest` from `@/shared/api`. It attaches the session token itself (wired in
   `app/App.tsx`) and signs the user out on a rejected token. Errors are `ApiError` with
   `code`, `message` and `fields`; branch on `code`, show `message`, map `fields` onto form inputs.
+- `VITE_GA_MEASUREMENT_ID` turns on optional GA4 (SRS 4.14). Without it nothing loads. Send events only
+  through `trackEvent`/`useTrackEvent` from `@/shared/lib/analytics`: no automatic page views, and never
+  names, emails, phone numbers, order or ticket IDs. Keep GA4 enhanced measurement off in the GA property.
 - There is no in-browser mock. In local mode the API returns one-time codes as `demoCode`; show
   them with a clear "Local mode" label.
 

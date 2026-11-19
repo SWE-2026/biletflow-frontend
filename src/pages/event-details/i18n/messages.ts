@@ -3,6 +3,10 @@ import { createMessages } from '@/shared/i18n'
 export const useEventDetailsMessages = createMessages({
   en: {
     loading: 'Loading event…',
+    questions: 'Questions about this event?',
+    contactSupport: 'Contact support',
+    assignedSeating: 'This event has assigned seating: pick your seats on the seat map.',
+    chooseSeats: 'Choose seats',
     notFound: 'Event not found',
     notFoundHint: 'It may have been unpublished or cancelled, or the link is wrong.',
     browseEvents: 'Browse events',
@@ -32,6 +36,10 @@ export const useEventDetailsMessages = createMessages({
   },
   ru: {
     loading: 'Загружаем мероприятие…',
+    questions: 'Есть вопросы по мероприятию?',
+    contactSupport: 'Написать в поддержку',
+    assignedSeating: 'На это мероприятие места назначаются: выберите их на схеме зала.',
+    chooseSeats: 'Выбрать места',
     notFound: 'Мероприятие не найдено',
     notFoundHint: 'Возможно, его сняли с публикации или отменили, либо ссылка неверна.',
     browseEvents: 'Смотреть афишу',
@@ -61,6 +69,10 @@ export const useEventDetailsMessages = createMessages({
   },
   kk: {
     loading: 'Іс-шара жүктелуде…',
+    questions: 'Іс-шара туралы сұрақтарыңыз бар ма?',
+    contactSupport: 'Қолдау қызметіне жазу',
+    assignedSeating: 'Бұл іс-шарада орындар тағайындалады: оларды зал сызбасынан таңдаңыз.',
+    chooseSeats: 'Орын таңдау',
     notFound: 'Іс-шара табылмады',
     notFoundHint: 'Ол жариялаудан алынған немесе болдырылмаған болуы мүмкін, не сілтеме қате.',
     browseEvents: 'Афишаны қарау',

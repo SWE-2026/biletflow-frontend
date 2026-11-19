@@ -8,8 +8,10 @@ import {
   useEventMessages,
   type Event,
 } from '@/entities/event'
+import { AddToCalendar } from '@/features/export-to-calendar'
 import { ApiError, getErrorMessage } from '@/shared/api'
 import { useLocale, type Locale } from '@/shared/i18n'
+import { useTrackEvent } from '@/shared/lib/analytics'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { useEventDetailsMessages, type EventDetailsMessages } from '../i18n/messages'
@@ -87,6 +89,20 @@ function EventDetails({ event, children }: { event: Event; children: ReactNode }
             {registration && <Fact label={t.registration}>{registration}</Fact>}
           </dl>
           {children}
+          {event.phase !== 'completed' && (
+            <div className="rounded-lg border border-gray-200 bg-white p-5">
+              <AddToCalendar event={event} />
+            </div>
+          )}
+          <p className="text-sm text-gray-600">
+            {t.questions}{' '}
+            <Link
+              to={`/account/support/new?eventId=${encodeURIComponent(event.id)}`}
+              className="font-medium text-indigo-600 hover:text-indigo-700"
+            >
+              {t.contactSupport}
+            </Link>
+          </p>
         </div>
 
         <div className="space-y-8 lg:order-1 lg:col-span-2">
@@ -146,6 +162,7 @@ export function EventDetailsPage() {
   const campaign = useAsyncData(`campaign:${eventId}:${campaignToken ?? ''}`, (signal) =>
     campaignToken ? lookupPromo(eventId, { campaign: campaignToken }, signal) : Promise.resolve(null),
   )
+  useTrackEvent('campaign_link_visit', { event_id: eventId, campaign_token: campaignToken ?? '' }, !!campaignToken)
 
   if (state.status === 'loading')
     return (

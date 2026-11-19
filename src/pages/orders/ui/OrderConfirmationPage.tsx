@@ -11,6 +11,7 @@ import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { useConfirmationMessages } from '../i18n/confirmationMessages'
 import { shortId } from '../lib/format'
 import { DownloadTicketsButton } from './DownloadTicketsButton'
+import { SeatList } from '@/entities/seat'
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
@@ -95,9 +96,10 @@ function Confirmation({ order, tickets }: { order: Order; tickets: Ticket[] }) {
         <ul className="divide-y divide-gray-200 text-sm">
           {order.items.map((item) => (
             <li key={item.ticketTypeId} className="flex justify-between gap-4 px-5 py-3">
-              <span className="text-gray-700">
+              <div className="text-gray-700">
                 {item.quantity} × {item.ticketTypeName}
-              </span>
+                <SeatList seats={item.seats} />
+              </div>
               <span className="text-gray-900">
                 <TicketPrice amount={item.unitPriceAmount * item.quantity} />
               </span>
@@ -132,6 +134,7 @@ function Confirmation({ order, tickets }: { order: Order; tickets: Ticket[] }) {
               <li key={ticket.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
                 <div>
                   <p className="font-medium text-gray-900">{ticket.ticketTypeName}</p>
+                  {ticket.seat && <SeatList seats={[ticket.seat]} />}
                   <p className="text-sm text-gray-600">
                     {ticket.attendeeName} ·{' '}
                     <span title={ticket.id} className="font-mono">

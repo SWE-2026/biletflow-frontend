@@ -1,2 +1,2 @@
 export { CURRENCY } from './currency'
-export { apiUrl } from './env'
+export { apiUrl, gaMeasurementId } from './env'

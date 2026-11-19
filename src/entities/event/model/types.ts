@@ -28,6 +28,8 @@ export type Event = {
   registrationClosesAt: string | null
   /** Free text shown to buyers; may be empty. */
   refundPolicy: string
+  seatingMode: 'general' | 'assigned'
+  seatingLayout: string | null
   createdAt: string
   updatedAt: string
 }

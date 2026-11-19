@@ -10,6 +10,7 @@ import { Button } from '@/shared/ui/button'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { cancelOrder, payOrder } from '../api/checkoutApi'
 import { checkoutErrorMessages, useCheckoutMessages } from '../i18n/messages'
+import { SeatList } from '@/entities/seat'
 
 type PaymentStepProps = {
   orderId: string
@@ -37,9 +38,10 @@ function OrderSummary({ order }: { order: Order }) {
         <li className="pb-1 text-gray-600">{order.eventTitle}</li>
         {order.items.map((item) => (
           <li key={item.ticketTypeId} className="flex justify-between gap-3">
-            <span className="text-gray-700">
+            <div className="text-gray-700">
               {item.quantity} × {item.ticketTypeName}
-            </span>
+              <SeatList seats={item.seats} />
+            </div>
             <span className="text-gray-900">
               <TicketPrice amount={item.unitPriceAmount * item.quantity} />
             </span>

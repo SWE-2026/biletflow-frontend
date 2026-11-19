@@ -10,6 +10,7 @@ import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { Card, DataTable, DetailList, Page } from '@/shared/ui/page'
 import { adminOrdersApi } from '../api/adminOrdersApi'
 import { useAdminOrdersMessages } from '../i18n/messages'
+import { SeatList } from '@/entities/seat'
 
 function OrderView({ order }: { order: OrganizerOrder }) {
   const t = useAdminOrdersMessages()
@@ -42,7 +43,15 @@ function OrderView({ order }: { order: OrganizerOrder }) {
           rows={order.items}
           rowKey={(item) => item.ticketTypeId}
           columns={[
-            { header: t.ticketType, cell: (item) => item.ticketTypeName },
+            {
+              header: t.ticketType,
+              cell: (item) => (
+                <>
+                  {item.ticketTypeName}
+                  <SeatList seats={item.seats} />
+                </>
+              ),
+            },
             { header: t.quantity, align: 'right', cell: (item) => item.quantity },
             { header: t.unitPrice, align: 'right', cell: (item) => money(item.unitPriceAmount) },
           ]}

@@ -14,6 +14,7 @@ import { Card, DataTable, DetailList, Page } from '@/shared/ui/page'
 import { getEventDisputes } from '../api/disputesApi'
 import { useOrganizerOrdersMessages } from '../i18n/messages'
 import { OrderActions } from './OrderActions'
+import { SeatList } from '@/entities/seat'
 
 type Loaded = { order: OrganizerOrder | undefined; disputes: Dispute[] }
 
@@ -46,7 +47,15 @@ function OrderBody({ order, disputes, onChange }: { order: OrganizerOrder; dispu
           rows={order.items}
           rowKey={(item) => item.ticketTypeId}
           columns={[
-            { header: t.ticketType, cell: (item) => item.ticketTypeName },
+            {
+              header: t.ticketType,
+              cell: (item) => (
+                <>
+                  {item.ticketTypeName}
+                  <SeatList seats={item.seats} />
+                </>
+              ),
+            },
             { header: t.quantity, align: 'right', cell: (item) => item.quantity },
             { header: t.unitPrice, align: 'right', cell: (item) => <Money amount={item.unitPriceAmount} /> },
           ]}
