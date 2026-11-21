@@ -117,7 +117,9 @@ export function LanguageSwitcher() {
         className="flex items-center gap-2 rounded-md border border-gray-300 bg-white py-1 pr-2 pl-2 text-sm text-gray-700 hover:bg-gray-50 focus-visible:outline-2 focus-visible:outline-indigo-600"
       >
         <Flag locale={locale} />
-        <span lang={locale}>{localeNames[locale]}</span>
+        <span lang={locale} className="hidden sm:inline">
+          {localeNames[locale]}
+        </span>
         <span aria-hidden="true" className={`text-xs text-gray-500 transition-transform ${open ? 'rotate-180' : ''}`}>
           ▾
         </span>

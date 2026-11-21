@@ -1,6 +1,6 @@
 # BiletFlow Frontend
 
-Web app for BiletFlow, a self-service event ticketing platform for Kazakhstan (attendees, organizers, platform admins). The ticket-verification app for Event Admins is a separate React Native project and is **not** part of this repo.
+Web app for BiletFlow, a self-service event ticketing platform for Kazakhstan (attendees, organizers, platform admins). The ticket-verification app for Event Admins is a separate React Native project and is **not** part of this repo. That app also shows this web app in a WebView and shares its session with it through `@/shared/lib/native-app`: keep `setSession`/`clearSession` as the only way the session changes, and save files only through `saveBlob`.
 
 ## Stack
 

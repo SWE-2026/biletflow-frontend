@@ -28,35 +28,39 @@ export function AppLayout() {
       ? handle.area(new URLSearchParams(location.search))
       : handle?.area
   const subNav = match && handle?.subNav ? handle.subNav(match.params, t) : undefined
+  const navAreas = areas(t, session?.user.role)
 
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-10 bg-white">
-        <div className="flex h-14 items-center gap-6 border-b border-gray-200 px-6">
-          <Link to="/" className="text-lg font-bold">
+        <div className="flex h-12 items-center gap-3 border-b border-gray-200 px-4 sm:h-14 sm:gap-6 sm:px-6">
+          <Link to="/" className="hidden text-lg font-bold sm:block">
             BiletFlow
           </Link>
-          <nav aria-label={t.mainNavigation} className="flex gap-1 text-sm">
-            {areas(t, session?.user.role).map((item) => (
+          <nav
+            aria-label={t.mainNavigation}
+            className={`${navAreas.length > 1 ? 'flex' : 'hidden sm:flex'} min-w-0 gap-0.5 overflow-x-auto rounded-lg max-sm:[scrollbar-width:none] bg-gray-100 p-0.5 text-sm sm:gap-1 sm:overflow-visible sm:rounded-none sm:bg-transparent sm:p-0`}
+          >
+            {navAreas.map((item) => (
               <Link
                 key={item.area}
                 to={item.to}
                 aria-current={area === item.area ? 'page' : undefined}
                 className={
                   area === item.area
-                    ? 'rounded-md bg-gray-900 px-3 py-1.5 font-medium text-white'
-                    : 'rounded-md px-3 py-1.5 text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                    ? 'shrink-0 rounded-md bg-white px-3 py-1 font-medium text-gray-900 shadow-sm sm:bg-gray-900 sm:py-1.5 sm:text-white sm:shadow-none'
+                    : 'shrink-0 rounded-md px-3 py-1 text-gray-600 hover:text-gray-900 sm:py-1.5 sm:hover:bg-gray-100'
                 }
               >
                 {item.label}
               </Link>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-4 text-sm">
+          <div className="ml-auto flex shrink-0 items-center gap-3 text-sm sm:gap-4">
             <LanguageSwitcher />
             {session ? (
               <>
-                <span className="text-gray-600">
+                <span className="hidden text-gray-600 sm:inline">
                   {session.user.displayName || session.user.email}
                 </span>
                 <button
@@ -81,7 +85,7 @@ export function AppLayout() {
         </div>
 
         {subNav && (
-          <div className="flex items-center gap-4 overflow-x-auto border-b border-gray-200 bg-gray-50 px-6 text-sm">
+          <div className="flex items-center gap-4 overflow-x-auto border-b border-gray-200 bg-gray-50 px-4 text-sm max-sm:[scrollbar-width:none] sm:px-6">
             {subNav.back && (
               <Link
                 to={subNav.back.to}

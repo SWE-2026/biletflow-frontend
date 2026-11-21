@@ -5,6 +5,18 @@
   color-scheme: light;
 }
 
+html,
+body {
+  overflow-x: clip;
+}
+
 body {
   @apply bg-gray-50 text-gray-900;
+  overflow-wrap: break-word;
+}
+
+@media (width < 40rem) {
+  :is(input, select, textarea):not(.text-lg, .text-xl, .text-2xl, .text-3xl) {
+    font-size: 16px;
+  }
 }

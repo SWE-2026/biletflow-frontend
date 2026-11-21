@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from 'react'
+import { postSessionToNativeApp } from '@/shared/lib/native-app'
 import type { Session } from './user'
 
 const STORAGE_KEY = 'biletflow.session'
@@ -53,6 +54,7 @@ export function setSession(session: Session) {
     // Storage can be unavailable (private mode); the session still lives in memory
   }
   emit(session)
+  postSessionToNativeApp(session)
 }
 
 export function clearSession() {
@@ -62,6 +64,7 @@ export function clearSession() {
     // Nothing stored to remove
   }
   emit(null)
+  postSessionToNativeApp(null)
 }
 
 function subscribe(listener: () => void) {
