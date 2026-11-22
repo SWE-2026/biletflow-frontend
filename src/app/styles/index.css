@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Light-only UI: `dark:` utilities apply only under a `.dark` class, which nothing sets, so a phone or
+   browser in dark mode doesn't turn some pages' text white on the light background */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* The UI is light-only for now; without this, dark-mode browsers paint a dark page behind dark text */
 :root {
   color-scheme: light;

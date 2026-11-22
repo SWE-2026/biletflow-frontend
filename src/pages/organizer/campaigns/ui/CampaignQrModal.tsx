@@ -1,4 +1,6 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import { copyText } from '@/shared/lib/clipboard'
+import { saveBlob } from '@/shared/lib/download'
 import { campaignsApi, type Campaign } from '../api/campaignsApi'
 import { useCampaignsMessages } from '../i18n/messages'
 import { useBlobUrl } from '../lib/useBlobUrl'
@@ -12,6 +14,7 @@ type CampaignQrModalProps = {
 export function CampaignQrModal({ eventId, campaign, onClose }: CampaignQrModalProps) {
   const t = useCampaignsMessages()
   const [copied, setCopied] = useState(false)
+  const linkInput = useRef<HTMLInputElement>(null)
 
   const blobState = useBlobUrl(campaign.id, (signal) =>
     campaignsApi.getQrBlob(eventId, campaign.id, signal),
@@ -20,12 +23,12 @@ export function CampaignQrModal({ eventId, campaign, onClose }: CampaignQrModalP
   const fullUrl = `${window.location.origin}${campaign.linkPath}`
 
   const copyUrl = async () => {
-    try {
-      await navigator.clipboard.writeText(fullUrl)
+    if (await copyText(fullUrl)) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
-    } catch {
-      // fallback if clipboard fails
+    } else {
+      // Leave the link selected so it can be copied by hand
+      linkInput.current?.select()
     }
   }
 
@@ -72,6 +75,7 @@ export function CampaignQrModal({ eventId, campaign, onClose }: CampaignQrModalP
             </label>
             <div className="mt-1 flex items-center gap-2">
               <input
+                ref={linkInput}
                 type="text"
                 readOnly
                 value={fullUrl}
@@ -90,13 +94,13 @@ export function CampaignQrModal({ eventId, campaign, onClose }: CampaignQrModalP
 
         <div className="mt-6 flex justify-end gap-2 border-t border-gray-200 pt-3 dark:border-gray-700">
           {blobState.status === 'ready' && (
-            <a
-              href={blobState.url}
-              download={`${campaign.code}-qr.svg`}
+            <button
+              type="button"
+              onClick={() => saveBlob(blobState.blob, `${campaign.code}-qr.svg`)}
               className="rounded-lg border border-gray-300 px-3 py-1.5 text-xs font-medium text-gray-700 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
             >
               {t.downloadQr}
-            </a>
+            </button>
           )}
           <button
             type="button"

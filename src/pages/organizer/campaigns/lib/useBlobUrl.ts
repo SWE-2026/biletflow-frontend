@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 
-type BlobUrlState = { status: 'loading' } | { status: 'error' } | { status: 'ready'; url: string }
+type BlobUrlState = { status: 'loading' } | { status: 'error' } | { status: 'ready'; url: string; blob: Blob }
 
 const LOADING = { status: 'loading' } as const
 
@@ -20,7 +20,7 @@ export function useBlobUrl(key: string | null, load: (signal: AbortSignal) => Pr
       (blob) => {
         if (controller.signal.aborted) return
         url = URL.createObjectURL(blob)
-        setSettled({ key, value: { status: 'ready', url } })
+        setSettled({ key, value: { status: 'ready', url, blob } })
       },
       () => {
         if (!controller.signal.aborted) setSettled({ key, value: { status: 'error' } })
