@@ -1,5 +1,7 @@
 import { formatDateTime, useLocale } from '@/shared/i18n'
+import { shortId } from '@/shared/lib/short-id'
 import { useActivityTimelineMessages } from '../i18n/messages'
+import { humanizeEntityType, isKnownEntityType } from '../model/entity'
 import type { ActivityEntry } from '../model/types'
 
 export function ActivityTimeline({ entries, timeZone }: { entries: ActivityEntry[]; timeZone: string }) {
@@ -26,6 +28,20 @@ export function ActivityTimeline({ entries, timeZone }: { entries: ActivityEntry
               <span>·</span>
               <span>{t[`type_${entry.type}`]}</span>
               <span className="font-mono">{entry.action}</span>
+              {entry.entityType && (
+                <>
+                  <span>·</span>
+                  <span>
+                    <span className="sr-only">{t.affected}: </span>
+                    {isKnownEntityType(entry.entityType) ? t[`entity_${entry.entityType}`] : humanizeEntityType(entry.entityType)}
+                    {entry.entityId && (
+                      <span className="ml-1 font-mono" title={entry.entityId}>
+                        #{shortId(entry.entityId)}
+                      </span>
+                    )}
+                  </span>
+                </>
+              )}
             </p>
           </div>
         </li>

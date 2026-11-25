@@ -13,7 +13,7 @@ export const useCheckoutMessages = createMessages({
     notFoundHint: 'It may have been unpublished or cancelled, or the link is wrong.',
     nothingOnSale: 'No tickets for this event are on sale right now.',
     verifyEmail:
-      'Verify your email before buying: sign out, then sign in with an email code. That confirms your address.',
+      'Verify your email before buying. Choose “Verify email” and enter the code we send you.',
     // Step 1
     stepTickets: 'Tickets',
     quantityFor: (name: string) => `Number of “${name}” tickets`,
@@ -74,7 +74,7 @@ export const useCheckoutMessages = createMessages({
     ticket_limit_reached: 'That’s more tickets of one type than a single order allows.',
     registration_closed: 'Sales for one of these tickets are closed.',
     email_unverified:
-      'Verify your email before buying: sign out, then sign in with an email code. That confirms your address.',
+      'Verify your email before buying: choose “Verify email” on your account page.',
     not_found: 'One of these tickets is no longer available.',
     order_expired: 'Your ticket hold has ended. Start again to buy tickets.',
     invalid_order_state: 'This order can’t be paid any more. It was already paid or cancelled.',
@@ -93,7 +93,7 @@ export const useCheckoutMessages = createMessages({
     notFoundHint: 'Возможно, его сняли с публикации или отменили, либо ссылка неверна.',
     nothingOnSale: 'Сейчас билеты на это мероприятие не продаются.',
     verifyEmail:
-      'Перед покупкой подтвердите почту: выйдите и войдите снова по коду из письма.',
+      'Перед покупкой подтвердите почту: нажмите «Подтвердить почту» и введите код из письма.',
     stepTickets: 'Билеты',
     quantityFor: (name) => `Количество билетов «${name}»`,
     maxPerOrder: (max) => `Не больше ${max} в одном заказе`,
@@ -151,7 +151,7 @@ export const useCheckoutMessages = createMessages({
     ticket_limit_reached: 'Столько билетов одного типа в одном заказе взять нельзя.',
     registration_closed: 'Продажа одного из выбранных билетов закрыта.',
     email_unverified:
-      'Перед покупкой подтвердите почту: выйдите и войдите снова по коду из письма.',
+      'Перед покупкой подтвердите почту: нажмите «Подтвердить почту» на странице аккаунта.',
     not_found: 'Один из выбранных билетов больше недоступен.',
     order_expired: 'Резерв билетов истёк. Начните заново, чтобы купить билеты.',
     invalid_order_state: 'Этот заказ уже нельзя оплатить: он оплачен или отменён.',
@@ -170,7 +170,7 @@ export const useCheckoutMessages = createMessages({
     notFound: 'Іс-шара табылмады',
     notFoundHint: 'Ол жариялаудан алынған немесе болдырылмаған болуы мүмкін, не сілтеме қате.',
     nothingOnSale: 'Қазір бұл іс-шараға билет сатылмайды.',
-    verifyEmail: 'Сатып алмас бұрын поштаңызды растаңыз: шығып, хаттағы кодпен қайта кіріңіз.',
+    verifyEmail: 'Сатып алмас бұрын поштаңызды растаңыз: «Поштаны растау» түймесін басып, хаттағы кодты енгізіңіз.',
     stepTickets: 'Билеттер',
     quantityFor: (name) => `«${name}» билеттерінің саны`,
     maxPerOrder: (max) => `Бір тапсырыста ${max} дейін`,
@@ -227,7 +227,7 @@ export const useCheckoutMessages = createMessages({
     sold_out: 'Билеттер жеткіліксіз. Азырақ таңдап көріңіз.',
     ticket_limit_reached: 'Бір тапсырыста бір түрдегі мұнша билет алуға болмайды.',
     registration_closed: 'Таңдалған билеттердің бірін сату жабық.',
-    email_unverified: 'Сатып алмас бұрын поштаңызды растаңыз: шығып, хаттағы кодпен қайта кіріңіз.',
+    email_unverified: 'Сатып алмас бұрын поштаңызды растаңыз: тіркелгі бетінде «Поштаны растау» түймесін басыңыз.',
     not_found: 'Таңдалған билеттердің бірі енді қолжетімсіз.',
     order_expired: 'Билеттер броны аяқталды. Билет сатып алу үшін қайта бастаңыз.',
     invalid_order_state: 'Бұл тапсырысты енді төлеуге болмайды: ол төленген немесе болдырылмаған.',

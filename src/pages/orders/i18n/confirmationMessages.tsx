@@ -25,6 +25,7 @@ export const useConfirmationMessages = createMessages({
     printHint: 'Print them or show the QR code on your phone at the entrance.',
     myTickets: 'My tickets',
     backToEvent: 'Back to the event',
+    getHelp: 'Get help with this order',
   },
   ru: {
     loading: 'Загружаем заказ…',
@@ -49,6 +50,7 @@ export const useConfirmationMessages = createMessages({
     printHint: 'Распечатайте их или покажите QR-код на телефоне при входе.',
     myTickets: 'Мои билеты',
     backToEvent: 'Вернуться к мероприятию',
+    getHelp: 'Помощь с этим заказом',
   },
   kk: {
     loading: 'Тапсырыс жүктелуде…',
@@ -73,5 +75,6 @@ export const useConfirmationMessages = createMessages({
     printHint: 'Оларды басып шығарыңыз немесе кіре берісте телефоныңыздағы QR-кодты көрсетіңіз.',
     myTickets: 'Менің билеттерім',
     backToEvent: 'Іс-шараға оралу',
+    getHelp: 'Осы тапсырыс бойынша көмек',
   },
 })

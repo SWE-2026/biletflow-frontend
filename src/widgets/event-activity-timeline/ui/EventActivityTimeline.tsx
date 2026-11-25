@@ -6,15 +6,22 @@ import { FilterPills } from '@/shared/ui/filter-pills'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { getEventActivity } from '../api/activityApi'
 import { useActivityTimelineMessages } from '../i18n/messages'
+import { dayRangeProblem, dayRangeToBounds, type DayRange } from '../model/filters'
 import { ACTIVITY_TYPES, type ActivityScope, type ActivityType } from '../model/types'
 import { ActivityTimeline } from './ActivityTimeline'
+import { DateRangeFilter } from './DateRangeFilter'
 
 export function EventActivityTimeline({ scope, eventId, initialType = '' }: { scope: ActivityScope; eventId: string; initialType?: ActivityType | '' }) {
   const t = useActivityTimelineMessages()
   const common = useCommonMessages()
   const [type, setType] = useState<ActivityType | ''>(initialType)
-  const { state, reload } = useAsyncData(`activity:${scope}:${eventId}:${type}`, (signal) =>
-    getEventActivity(scope, eventId, type, signal),
+  const [days, setDays] = useState<DayRange>({ from: '', to: '' })
+  const invalidRange = dayRangeProblem(days) !== null
+  // Derived only from picked days, so the key stays the same between renders
+  const bounds = dayRangeToBounds(days, browserTimeZone)
+  const { state, reload } = useAsyncData(
+    `activity:${scope}:${eventId}:${type}:${invalidRange ? 'invalid' : `${bounds.from}:${bounds.to}`}`,
+    (signal) => (invalidRange ? Promise.resolve(null) : getEventActivity(scope, eventId, { type, ...bounds }, signal)),
   )
 
   const options = [
@@ -25,9 +32,10 @@ export function EventActivityTimeline({ scope, eventId, initialType = '' }: { sc
   return (
     <div className="space-y-4">
       <FilterPills label={t.filter} options={options} value={type} onChange={setType} />
+      <DateRangeFilter value={days} onChange={setDays} />
       {state.status === 'loading' && <LoadingState label={t.loading} />}
       {state.status === 'error' && <ErrorState message={getErrorMessage(state.error)} onRetry={reload} />}
-      {state.status === 'success' && <ActivityTimeline entries={state.data} timeZone={browserTimeZone} />}
+      {state.status === 'success' && state.data && <ActivityTimeline entries={state.data} timeZone={browserTimeZone} />}
     </div>
   )
 }

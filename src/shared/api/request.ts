@@ -5,13 +5,15 @@ type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
   body?: unknown
   signal?: AbortSignal
+  /** Sends this bearer token instead of the current session's, e.g. to revoke a replaced one. */
+  token?: string
 }
 
 type AuthHooks = {
   /** Returns the bearer token of the signed-in user, if any. */
   getToken: () => string | undefined
-  /** Called when the API rejects the token, e.g. it expired or was revoked. */
-  onUnauthorized: () => void
+  /** Called with the rejected token when the API refuses it, e.g. it expired or was revoked. */
+  onUnauthorized: (token: string) => void
 }
 
 let auth: AuthHooks = { getToken: () => undefined, onUnauthorized: () => {} }
@@ -42,7 +44,7 @@ async function send(path: string, options: RequestOptions, accept: string): Prom
   const headers: Record<string, string> = { Accept: accept }
   const isForm = options.body instanceof FormData
   if (options.body !== undefined && !isForm) headers['Content-Type'] = 'application/json'
-  const token = auth.getToken()
+  const token = options.token ?? auth.getToken()
   if (token) headers.Authorization = `Bearer ${token}`
 
   let response: Response
@@ -64,7 +66,7 @@ async function send(path: string, options: RequestOptions, accept: string): Prom
 
   if (!response.ok) {
     const data: unknown = await response.json().catch(() => undefined)
-    if (response.status === 401 && token) auth.onUnauthorized()
+    if (response.status === 401 && token) auth.onUnauthorized(token)
     throw new ApiError(
       response.status,
       readString(data, 'code') ?? 'http_error',

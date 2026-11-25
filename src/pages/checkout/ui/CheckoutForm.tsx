@@ -12,6 +12,7 @@ import type { Order } from '@/entities/order'
 import { SeatList, type Seat } from '@/entities/seat'
 import { getSaleState, TicketPrice, type TicketType } from '@/entities/ticket-type'
 import { useSession } from '@/entities/user'
+import { VerifiedEmailGate } from '@/features/verify-email'
 import { ApiError, getErrorMessage } from '@/shared/api'
 import { Button } from '@/shared/ui/button'
 import { TextField } from '@/shared/ui/text-field'
@@ -169,15 +170,19 @@ export function CheckoutForm({
     }
   }
 
-  if (session && !session.user.emailVerified) {
-    return <p className="rounded-lg border border-amber-300 bg-amber-50 p-5 text-sm text-amber-900">{t.verifyEmail}</p>
-  }
-
   if (onSale.length === 0) {
     return <p className="rounded-lg border border-gray-200 bg-white p-5 text-sm text-gray-600">{t.nothingOnSale}</p>
   }
 
   return (
+    <VerifiedEmailGate
+      prompt={(action) => (
+        <div className="space-y-4 rounded-lg border border-amber-300 bg-amber-50 p-5">
+          <p className="text-sm text-amber-900">{t.verifyEmail}</p>
+          {action}
+        </div>
+      )}
+    >
     <form noValidate onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
         <Panel title={t.stepTickets}>
@@ -357,5 +362,6 @@ export function CheckoutForm({
         </Panel>
       </aside>
     </form>
+    </VerifiedEmailGate>
   )
 }

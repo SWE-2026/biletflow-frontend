@@ -1,8 +1,9 @@
-import type { ButtonHTMLAttributes } from 'react'
+import type { ComponentProps } from 'react'
 
 type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'link'
 
-type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
+// ComponentProps includes `ref`, which React 19 passes through `rest` to the <button>
+type ButtonProps = ComponentProps<'button'> & {
   variant?: ButtonVariant
   loading?: boolean
 }
