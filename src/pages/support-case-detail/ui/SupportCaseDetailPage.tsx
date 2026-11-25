@@ -5,8 +5,10 @@ import {
   SupportStatusBadge,
   useSupportCaseMessages,
   type CaseDetailResponse,
+  type SupportCase,
   type SupportStatus,
 } from '@/entities/support-case'
+import { useSession } from '@/entities/user'
 import { ApiError } from '@/shared/api'
 import { formatDateTime, useLocale } from '@/shared/i18n'
 import { useAsyncData } from '@/shared/lib/async-data'
@@ -14,6 +16,7 @@ import { Button } from '@/shared/ui/button'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { useSupportDetailMessages } from '../i18n/messages'
 import { fileProblem } from '../lib/files'
+import { AssignmentPanel } from './AssignmentPanel'
 import { AttachmentList, AttachmentPicker } from './Attachments'
 
 export function SupportCaseDetailPage() {
@@ -22,6 +25,7 @@ export function SupportCaseDetailPage() {
   const tCases = useSupportCaseMessages()
   const locale = useLocale()
   const navigate = useNavigate()
+  const viewer = useSession()?.user
 
   const [replyText, setReplyText] = useState('')
   const [files, setFiles] = useState<File[]>([])
@@ -75,16 +79,29 @@ export function SupportCaseDetailPage() {
     setActionError(null)
     try {
       const updated = await supportApi.updateStatus(caseId, newStatus)
-      setData({
-        case: updated,
-        messages,
-      })
-      reload()
+      await refreshQuietly(updated)
     } catch {
       setActionError(t.errorStatus)
     } finally {
       setStatusUpdating(false)
     }
+  }
+
+  // Status and assignment changes append to the thread: show the updated case at once, then fetch the
+  // thread without the full-page loading state. If that fetch fails, the updated case still stands.
+  const refreshQuietly = async (updated: SupportCase) => {
+    setData({ case: updated, messages })
+    try {
+      setData(await supportApi.get(caseId))
+    } catch {
+      // The case itself is already up to date; the thread refreshes on the next load.
+    }
+  }
+
+  const handleAssign = async (assigneeId: string | null) => {
+    setActionError(null)
+    const updated = await supportApi.assign(caseId, assigneeId)
+    await refreshQuietly(updated)
   }
 
   return (
@@ -148,6 +165,16 @@ export function SupportCaseDetailPage() {
               {supportCase.requesterName || supportCase.requesterEmail}
             </div>
           </div>
+          <div>
+            <span className="text-gray-400">{t.assignee}:</span>
+            <div className="font-medium text-gray-800 dark:text-gray-200">
+              {supportCase.assigneeId === null
+                ? t.unassigned
+                : supportCase.assigneeId === viewer?.id
+                  ? t.assignedToYou(supportCase.assigneeEmail ?? '')
+                  : (supportCase.assigneeEmail ?? '—')}
+            </div>
+          </div>
           {supportCase.eventTitle && (
             <div>
               <span className="text-gray-400">{t.event}:</span>
@@ -173,6 +200,15 @@ export function SupportCaseDetailPage() {
             </div>
           )}
         </div>
+
+        {isHandler && viewer && (
+          <AssignmentPanel
+            supportCase={supportCase}
+            viewerId={viewer.id}
+            isAdmin={viewer.role === 'admin'}
+            onAssign={handleAssign}
+          />
+        )}
       </div>
 
       {/* Messages Thread */}

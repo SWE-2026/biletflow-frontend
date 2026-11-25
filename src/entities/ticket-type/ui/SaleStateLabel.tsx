@@ -6,6 +6,7 @@ const symbols: Record<SaleState['kind'], string> = {
   on_sale: '●',
   not_started: '◷',
   ended: '✕',
+  sold_out: '✕',
   event_started: '✕',
 }
 
@@ -20,7 +21,9 @@ export function SaleStateLabel({ state, timeZone }: { state: SaleState; timeZone
         ? t.notStarted(formatDateTime(state.opensAt, timeZone, locale))
         : state.kind === 'ended'
           ? t.ended
-          : t.eventStarted
+          : state.kind === 'sold_out'
+            ? t.soldOut
+            : t.eventStarted
 
   return (
     <span

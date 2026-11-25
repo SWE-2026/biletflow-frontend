@@ -9,7 +9,7 @@ import {
 import { getErrorMessage } from '@/shared/api'
 import { Button } from '@/shared/ui/button'
 import { useSupportMessages } from '../i18n/messages'
-import type { SupportScope } from './SupportCasesPage'
+import type { SupportScope } from '../lib/filters'
 
 type NewSupportCasePageProps = {
   scope: SupportScope

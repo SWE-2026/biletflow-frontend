@@ -23,7 +23,7 @@ export function AddToCalendar({ event }: { event: CalendarEvent }) {
         {cancelled ? t.cancelledTitle : t.title}
       </h2>
       <p className="text-sm text-gray-600">{cancelled ? t.cancelledHint : t.hint}</p>
-      <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+      <div className="flex flex-col items-start gap-3">
         <Button variant="secondary" onClick={download}>
           {cancelled ? t.downloadCancellation : t.downloadIcs}
         </Button>

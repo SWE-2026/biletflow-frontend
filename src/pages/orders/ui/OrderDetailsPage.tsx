@@ -12,6 +12,7 @@ import { getMyDisputes } from '../api/disputeApi'
 import { useOrderDetailsMessages } from '../i18n/orderDetailsMessages'
 import { disputeByOrder } from '../lib/disputeByOrder'
 import { browserTimeZone, shortId } from '../lib/format'
+import { orderSupportPath } from '../lib/support'
 import type { Dispute } from '@/entities/dispute'
 import { DisputeSection } from './DisputeSection'
 import { DisputeStatusBadge } from '@/entities/dispute'
@@ -254,6 +255,19 @@ function OrderDetails({ data, onDispute }: { data: OrderView; onDispute: (disput
       <Payments order={order} />
       <Tickets orderId={order.id} tickets={tickets} />
       <DisputeSection order={order} dispute={dispute} onOpened={onDispute} />
+
+      <section aria-labelledby="help-heading" className="rounded-lg border border-gray-200 bg-gray-50 px-5 py-4">
+        <h2 id="help-heading" className="text-sm font-semibold text-gray-900">
+          {t.helpQuestion}
+        </h2>
+        <p className="mt-1 text-sm text-gray-600">{t.helpHint}</p>
+        <Link
+          to={orderSupportPath(order.id)}
+          className="mt-2 inline-block text-sm font-medium text-indigo-600 hover:text-indigo-700"
+        >
+          {t.contactSupport} <span aria-hidden="true">›</span>
+        </Link>
+      </section>
     </div>
   )
 }

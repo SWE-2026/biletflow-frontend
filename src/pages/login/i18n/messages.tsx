@@ -52,7 +52,7 @@ export const useLoginMessages = createMessages({
     // Sign up
     createAccount: 'Create account',
     creatingAccount: 'Creating account…',
-    verifyNotice: 'We’ll email you a code to verify your address.',
+    verifyNotice: 'After signing up, verify your email with “Verify email” on your account page.',
     // Reset
     resetHint: 'We’ll email you a 6-digit code to set a new password.',
     sendResetCode: 'Send reset code',
@@ -125,7 +125,7 @@ export const useLoginMessages = createMessages({
     forgotPassword: 'Забыли пароль?',
     createAccount: 'Создать аккаунт',
     creatingAccount: 'Создаём аккаунт…',
-    verifyNotice: 'Мы отправим на почту код для подтверждения адреса.',
+    verifyNotice: 'После регистрации подтвердите почту кнопкой «Подтвердить почту» на странице аккаунта.',
     resetHint: 'Мы отправим на почту 6-значный код для смены пароля.',
     sendResetCode: 'Отправить код',
     resetCodeSent: (email, length, minutes) => (
@@ -194,7 +194,7 @@ export const useLoginMessages = createMessages({
     forgotPassword: 'Құпиясөзді ұмыттыңыз ба?',
     createAccount: 'Тіркелгі жасау',
     creatingAccount: 'Тіркелгі жасалуда…',
-    verifyNotice: 'Мекенжайыңызды растау үшін поштаңызға код жібереміз.',
+    verifyNotice: 'Тіркелгеннен кейін тіркелгі бетіндегі «Поштаны растау» түймесімен поштаңызды растаңыз.',
     resetHint: 'Жаңа құпиясөз орнату үшін поштаңызға 6 таңбалы код жібереміз.',
     sendResetCode: 'Код жіберу',
     resetCodeSent: (email, length, minutes) => (

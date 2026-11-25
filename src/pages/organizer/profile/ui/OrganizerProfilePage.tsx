@@ -1,12 +1,14 @@
 import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { setSession, useSession, type Session } from '@/entities/user'
+import { VerifiedEmailGate } from '@/features/verify-email'
 import { getErrorMessage } from '@/shared/api'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { organizerApi } from '../api/organizerApi'
 import { useProfileMessages } from '../i18n/messages'
 import type { Organizer, OrganizerInput } from '../model/types'
+import { OrganizerPayouts } from './OrganizerPayouts'
 import { OrganizerProfileForm } from './OrganizerProfileForm'
 
 function Notice({ title, children }: { title: string; children: ReactNode }) {
@@ -80,23 +82,31 @@ function EditProfile() {
 
 function ProfileContent({ session }: { session: Session }) {
   const t = useProfileMessages()
-  const { role, emailVerified, email } = session.user
+  const { role, email } = session.user
 
   if (role === 'organizer')
     return (
-      <div className="mt-6">
+      <div className="mt-6 space-y-10">
         <EditProfile />
+        <OrganizerPayouts />
       </div>
     )
   if (role !== 'customer')
     return (
       <Notice title={t.notAvailableTitle}>{t.notAvailableHint}</Notice>
     )
-  if (!emailVerified)
-    return (
-      <Notice title={t.verifyEmailTitle}>{t.verifyEmailHint(email)}</Notice>
-    )
-  return <CreateProfile session={session} />
+  return (
+    <VerifiedEmailGate
+      prompt={(action) => (
+        <Notice title={t.verifyEmailTitle}>
+          {t.verifyEmailHint(email)}
+          <div className="mt-4">{action}</div>
+        </Notice>
+      )}
+    >
+      <CreateProfile session={session} />
+    </VerifiedEmailGate>
+  )
 }
 
 export function OrganizerProfilePage() {

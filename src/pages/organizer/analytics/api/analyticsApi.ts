@@ -72,3 +72,19 @@ export const getAnalytics = (eventId: string, filter: AnalyticsFilter, signal?: 
     { signal },
   ).then((r) => r.analytics)
 }
+
+/** All-time money for one event (GET /organizer/events/:id/sales). Amounts are demo KZT. */
+export type SalesSummary = {
+  grossAmount: number
+  processingFeeAmount: number
+  refundedAmount: number
+  estimatedPayoutAmount: number
+  paidOrders: number
+  ticketsSold: number
+  demo: boolean
+}
+
+export const getSales = (eventId: string, signal?: AbortSignal) =>
+  apiRequest<{ sales: SalesSummary }>(`/organizer/events/${encodeURIComponent(eventId)}/sales`, { signal }).then(
+    (r) => r.sales,
+  )

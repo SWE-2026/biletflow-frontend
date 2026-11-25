@@ -1,5 +1,5 @@
 export type { TicketType } from './model/types'
-export { getSaleState } from './lib/saleState'
+export { getSaleState, orderLimit } from './lib/saleState'
 export type { SaleState, SalesWindow } from './lib/saleState'
 export { SaleStateLabel } from './ui/SaleStateLabel'
 export { TicketPrice } from './ui/TicketPrice'

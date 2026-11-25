@@ -1,5 +1,4 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router'
 import {
   DISPUTE_REASONS,
   DisputeStatusBadge,
@@ -151,7 +150,6 @@ export function DisputeSection({ order, dispute, onOpened }: DisputeSectionProps
   const [formOpen, setFormOpen] = useState(false)
   const canDispute =
     order.status === 'paid' && order.totalAmount > 0 && dispute?.status !== 'open'
-  const supportLink = `/account/support/new?orderId=${encodeURIComponent(order.id)}&eventId=${encodeURIComponent(order.eventId)}`
 
   if (!dispute && !canDispute) return null
 
@@ -174,14 +172,9 @@ export function DisputeSection({ order, dispute, onOpened }: DisputeSectionProps
         ) : (
           <div className={`space-y-3 p-5 ${dispute ? 'border-t border-gray-200' : ''}`}>
             <p className="text-sm text-gray-600">{t.problemHint}</p>
-            <div className="flex flex-wrap items-center gap-4">
-              <Button variant="secondary" onClick={() => setFormOpen(true)}>
-                {t.openDispute}
-              </Button>
-              <Link to={supportLink} className="text-sm font-medium text-indigo-600 hover:text-indigo-700">
-                {t.contactSupport}
-              </Link>
-            </div>
+            <Button variant="secondary" onClick={() => setFormOpen(true)}>
+              {t.openDispute}
+            </Button>
           </div>
         ))}
     </section>

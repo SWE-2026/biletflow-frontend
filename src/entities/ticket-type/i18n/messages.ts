@@ -6,6 +6,7 @@ export const useTicketTypeMessages = createMessages({
     onSale: 'On sale',
     notStarted: (opensAt: string) => `On sale from ${opensAt}`,
     ended: 'Sales have ended',
+    soldOut: 'Sold out',
     eventStarted: 'The event has started',
   },
   ru: {
@@ -13,6 +14,7 @@ export const useTicketTypeMessages = createMessages({
     onSale: 'В продаже',
     notStarted: (opensAt) => `В продаже с ${opensAt}`,
     ended: 'Продажи завершены',
+    soldOut: 'Распродано',
     eventStarted: 'Мероприятие уже началось',
   },
   kk: {
@@ -20,6 +22,7 @@ export const useTicketTypeMessages = createMessages({
     onSale: 'Сатылымда',
     notStarted: (opensAt) => `${opensAt} бастап сатылымда`,
     ended: 'Сату аяқталды',
+    soldOut: 'Билеттер сатылып бітті',
     eventStarted: 'Іс-шара басталып кетті',
   },
 })

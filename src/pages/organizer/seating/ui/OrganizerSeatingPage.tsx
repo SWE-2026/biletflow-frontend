@@ -67,7 +67,7 @@ function SeatingForm({ eventId, seating: initial, layouts, ticketTypes }: FormPr
     <form noValidate onSubmit={submit} className="space-y-6">
       {locked && <Notice tone="warning">{t.locked}</Notice>}
       <Card title={t.mode}>
-        <fieldset className="space-y-3" disabled={locked || pending}>
+        <fieldset className="space-y-4 px-5 py-4" disabled={locked || pending}>
           <legend className="sr-only">{t.mode}</legend>
           {MODES.map((value) => (
             <label key={value} className="flex items-start gap-3 text-sm">
@@ -91,7 +91,7 @@ function SeatingForm({ eventId, seating: initial, layouts, ticketTypes }: FormPr
       {mode === 'assigned' && (
         <>
           <Card title={t.layout}>
-            <div className="space-y-5">
+            <div className="space-y-5 px-5 py-4">
               <Select
                 label={t.layout}
                 value={layoutKey}

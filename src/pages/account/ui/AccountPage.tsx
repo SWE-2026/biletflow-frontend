@@ -1,5 +1,6 @@
 import { Link } from 'react-router'
 import { useSession } from '@/entities/user'
+import { VerifyEmail } from '@/features/verify-email'
 import { browserTimeZone, formatDateTime, useLocale } from '@/shared/i18n'
 import { Card, DetailList, Page } from '@/shared/ui/page'
 import { useAccountMessages } from '../i18n/messages'
@@ -37,6 +38,9 @@ export function AccountPage() {
               { label: t.memberSince, value: formatDateTime(user.createdAt, browserTimeZone, locale, 'date') },
             ]}
           />
+          <div className="border-gray-200 px-5 has-[>:not(:empty)]:border-t has-[>:not(:empty)]:py-4">
+            <VerifyEmail />
+          </div>
         </Card>
       )}
       <nav aria-label={t.shortcuts} className="flex flex-wrap gap-3">

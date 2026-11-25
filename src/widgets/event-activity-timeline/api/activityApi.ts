@@ -1,13 +1,14 @@
 import { apiRequest } from '@/shared/api'
-import type { ActivityEntry, ActivityScope, ActivityType } from '../model/types'
+import { activityQuery, type ActivityFilter } from '../model/filters'
+import type { ActivityEntry, ActivityScope } from '../model/types'
 
 export const getEventActivity = (
   scope: ActivityScope,
   eventId: string,
-  type: ActivityType | '',
+  filter: ActivityFilter,
   signal?: AbortSignal,
 ) =>
   apiRequest<{ activity: ActivityEntry[] }>(
-    `/${scope}/events/${encodeURIComponent(eventId)}/activity${type ? `?type=${type}` : ''}`,
+    `/${scope}/events/${encodeURIComponent(eventId)}/activity${activityQuery(filter)}`,
     { signal },
   ).then((r) => r.activity)

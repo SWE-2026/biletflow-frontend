@@ -44,9 +44,14 @@ function TicketTypeRow({ event, ticketType, promo }: TicketTypeRowProps) {
             {t.promoApplies(promo.code)}
           </span>
         )}
-        {state.kind === 'on_sale' && ticketType.maxPerOrder > 1 && (
-          <span className="text-sm text-gray-500">{t.maxPerOrder(ticketType.maxPerOrder)}</span>
-        )}
+        {state.kind === 'on_sale' &&
+          (ticketType.available !== undefined && ticketType.available < ticketType.maxPerOrder ? (
+            <span className="text-sm font-medium text-amber-800">{t.fewLeft(ticketType.available)}</span>
+          ) : (
+            ticketType.maxPerOrder > 1 && (
+              <span className="text-sm text-gray-500">{t.maxPerOrder(ticketType.maxPerOrder)}</span>
+            )
+          ))}
       </div>
       {state.kind === 'on_sale' &&
         !seated &&

@@ -1,18 +1,32 @@
-import { useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router'
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router'
 import {
   supportApi,
   SupportStatusBadge,
   useSupportCaseMessages,
   type SupportCase,
 } from '@/entities/support-case'
+import { useSession } from '@/entities/user'
 import { formatDateTime, useLocale } from '@/shared/i18n'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { Button } from '@/shared/ui/button'
+import { FilterPills } from '@/shared/ui/filter-pills'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { useSupportMessages } from '../i18n/messages'
+import {
+  ASSIGNMENT_FILTERS,
+  caseBelongsToScope,
+  isAssignmentFilter,
+  isKindFilter,
+  isStatusFilter,
+  KIND_FILTERS,
+  matchesCaseFilters,
+  SUPPORT_LIST_LIMIT,
+  SUPPORT_STATUSES,
+  type AssignmentFilter,
+  type KindFilter,
+  type SupportScope,
+} from '../lib/filters'
 
-export type SupportScope = 'attendee' | 'organizer_platform' | 'organizer_event' | 'admin'
 
 type SupportCasesPageProps = {
   scope: SupportScope
@@ -24,8 +38,20 @@ export function SupportCasesPage({ scope }: SupportCasesPageProps) {
   const tCases = useSupportCaseMessages()
   const locale = useLocale()
   const navigate = useNavigate()
+  const viewerId = useSession()?.user.id
+  const [params, setParams] = useSearchParams()
+  const rawStatus = params.get('status')
+  const statusFilter = isStatusFilter(rawStatus) ? rawStatus : ''
+  const rawKind = params.get('kind')
+  const kindFilter: KindFilter = scope === 'admin' && isKindFilter(rawKind) ? rawKind : ''
+  const rawAssignment = params.get('assignment')
+  const assignmentFilter: AssignmentFilter =
+    (scope === 'admin' || scope === 'organizer_event') && isAssignmentFilter(rawAssignment) ? rawAssignment : ''
 
-  const [statusFilter, setStatusFilter] = useState<string>('')
+  const updateFilters = (next: { status?: string; kind?: KindFilter; assignment?: AssignmentFilter }) => {
+    const merged = { status: statusFilter, kind: kindFilter, assignment: assignmentFilter, ...next }
+    setParams(Object.fromEntries(Object.entries(merged).filter(([, value]) => value)), { replace: true })
+  }
 
   const getTitle = () => {
     switch (scope) {
@@ -83,7 +109,15 @@ export function SupportCasesPage({ scope }: SupportCasesPageProps) {
     return <ErrorState message={t.errorLoad} onRetry={reload} />
   }
 
-  const cases = state.data
+  const scopeCases = state.data.filter((c) => caseBelongsToScope(c, scope))
+  const cases = scopeCases.filter((c) =>
+    matchesCaseFilters(c, { kind: kindFilter, assignment: assignmentFilter }, viewerId),
+  )
+  const filtered = kindFilter !== '' || assignmentFilter !== ''
+  // The API returns at most SUPPORT_LIST_LIMIT cases, so client-side filters only see the most recent ones.
+  const truncated = state.data.length >= SUPPORT_LIST_LIMIT
+  const canCreate = scope !== 'admin' && scope !== 'organizer_event'
+  const showAssignee = scope === 'admin' || scope === 'organizer_event'
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8">
@@ -92,30 +126,65 @@ export function SupportCasesPage({ scope }: SupportCasesPageProps) {
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{title}</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{intro}</p>
         </div>
-        {scope !== 'admin' && (
+        {canCreate && (
           <Button type="button" onClick={() => navigate(getNewCaseUrl())}>
             + {t.newCaseButton}
           </Button>
         )}
       </div>
 
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="mb-4 flex flex-col gap-3">
+        <div className="flex flex-wrap items-center gap-2">
           <select
+            aria-label={t.status}
             value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
+            onChange={(e) => updateFilters({ status: e.target.value })}
             className="rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-800 focus:border-indigo-500 focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
           >
             <option value="">{t.allStatuses}</option>
-            <option value="open">{tCases.status_open}</option>
-            <option value="in_progress">{tCases.status_in_progress}</option>
-            <option value="waiting_for_customer">{tCases.status_waiting_for_customer}</option>
-            <option value="resolved">{tCases.status_resolved}</option>
+            {SUPPORT_STATUSES.map((status) => (
+              <option key={status} value={status}>
+                {tCases[`status_${status}`]}
+              </option>
+            ))}
           </select>
         </div>
+        {scope === 'admin' && (
+          <FilterPills<KindFilter>
+            label={t.kindFilter}
+            value={kindFilter}
+            onChange={(kind) => updateFilters({ kind })}
+            options={[
+              { value: '', label: t.allKinds },
+              ...KIND_FILTERS.map((kind) => ({ value: kind, label: t[`kind_${kind}`] })),
+            ]}
+          />
+        )}
+        {showAssignee && (
+          <FilterPills<AssignmentFilter>
+            label={t.assignmentFilter}
+            value={assignmentFilter}
+            onChange={(assignment) => updateFilters({ assignment })}
+            options={[
+              { value: '', label: t.allAssignments },
+              ...ASSIGNMENT_FILTERS.map((assignment) => ({ value: assignment, label: t[`assignment_${assignment}`] })),
+            ]}
+          />
+        )}
+        {(filtered || truncated) && (
+          <p role="status" className="text-sm text-gray-500 dark:text-gray-400">
+            {truncated
+              ? t.recentOnly(cases.length, SUPPORT_LIST_LIMIT)
+              : t.shownCount(cases.length, scopeCases.length)}
+          </p>
+        )}
       </div>
 
-      {cases.length === 0 ? (
+      {cases.length === 0 && filtered ? (
+        <div className="rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center text-sm text-gray-500 dark:border-gray-800 dark:text-gray-400">
+          {t.noMatches}
+        </div>
+      ) : cases.length === 0 ? (
         <div className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-gray-200 p-12 text-center dark:border-gray-800">
           <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400">
             💬
@@ -126,7 +195,7 @@ export function SupportCasesPage({ scope }: SupportCasesPageProps) {
           <p className="mt-1 max-w-sm text-sm text-gray-500 dark:text-gray-400">
             {t.noCasesHint}
           </p>
-          {scope !== 'admin' && (
+          {canCreate && (
             <div className="mt-6">
               <Button type="button" onClick={() => navigate(getNewCaseUrl())}>
                 + {t.newCaseButton}
@@ -143,10 +212,12 @@ export function SupportCasesPage({ scope }: SupportCasesPageProps) {
                   <th className="px-4 py-3">{t.subject}</th>
                   <th className="px-4 py-3">{t.category}</th>
                   <th className="px-4 py-3">{t.status}</th>
+                  {scope === 'admin' && <th className="px-4 py-3">{t.kind}</th>}
                   {scope !== 'organizer_event' && <th className="px-4 py-3">{t.event}</th>}
                   {(scope === 'organizer_event' || scope === 'admin') && (
                     <th className="px-4 py-3">{t.requester}</th>
                   )}
+                  {showAssignee && <th className="px-4 py-3">{t.assignee}</th>}
                   <th className="px-4 py-3">{t.lastActivity}</th>
                 </tr>
               </thead>
@@ -179,6 +250,11 @@ export function SupportCasesPage({ scope }: SupportCasesPageProps) {
                     <td className="px-4 py-3.5">
                       <SupportStatusBadge status={c.status} />
                     </td>
+                    {scope === 'admin' && (
+                      <td className="px-4 py-3.5 text-xs text-gray-500 dark:text-gray-400">
+                        {t[`kind_${c.kind}`]}
+                      </td>
+                    )}
                     {scope !== 'organizer_event' && (
                       <td className="px-4 py-3.5 text-xs text-gray-500 dark:text-gray-400">
                         {c.eventTitle || '—'}
@@ -187,6 +263,15 @@ export function SupportCasesPage({ scope }: SupportCasesPageProps) {
                     {(scope === 'organizer_event' || scope === 'admin') && (
                       <td className="px-4 py-3.5 text-xs text-gray-500 dark:text-gray-400">
                         {c.requesterName || c.requesterEmail}
+                      </td>
+                    )}
+                    {showAssignee && (
+                      <td className="px-4 py-3.5 text-xs text-gray-500 dark:text-gray-400">
+                        {c.assigneeId === null
+                          ? t.unassigned
+                          : c.assigneeId === viewerId
+                            ? t.you
+                            : (c.assigneeEmail ?? '—')}
                       </td>
                     )}
                     <td className="px-4 py-3.5 text-xs text-gray-400">

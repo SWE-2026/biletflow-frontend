@@ -1,7 +1,8 @@
 import { useId, useState } from 'react'
 import { Link, useLocation } from 'react-router'
-import type { TicketType } from '@/entities/ticket-type'
+import { orderLimit, type TicketType } from '@/entities/ticket-type'
 import { useSession } from '@/entities/user'
+import { VerifiedEmailGate } from '@/features/verify-email'
 import { getErrorMessage } from '@/shared/api'
 import { Button } from '@/shared/ui/button'
 import { registerForFreeEvent } from '../api/registerApi'
@@ -12,7 +13,7 @@ const MAX_QUANTITY_OPTIONS = 10
 
 type RegisterForFreeEventProps = {
   eventId: string
-  ticketType: Pick<TicketType, 'id' | 'name' | 'maxPerOrder'>
+  ticketType: Pick<TicketType, 'id' | 'name' | 'maxPerOrder' | 'available'>
   onRegistered: (orderId: string) => void
 }
 
@@ -39,12 +40,8 @@ export function RegisterForFreeEvent({ eventId, ticketType, onRegistered }: Regi
     )
   }
 
-  if (!session.user.emailVerified) {
-    return <p className="text-sm text-amber-900">{t.verifyEmail}</p>
-  }
-
   const options = Array.from(
-    { length: Math.min(ticketType.maxPerOrder, MAX_QUANTITY_OPTIONS) },
+    { length: Math.min(orderLimit(ticketType), MAX_QUANTITY_OPTIONS) },
     (_, i) => i + 1,
   )
 
@@ -61,6 +58,14 @@ export function RegisterForFreeEvent({ eventId, ticketType, onRegistered }: Regi
   }
 
   return (
+    <VerifiedEmailGate
+      prompt={(action) => (
+        <div className="space-y-3">
+          <p className="text-sm text-amber-900">{t.verifyEmail}</p>
+          {action}
+        </div>
+      )}
+    >
     <div className="space-y-2">
       <div className="flex flex-wrap items-end gap-3">
         <div>
@@ -93,5 +98,6 @@ export function RegisterForFreeEvent({ eventId, ticketType, onRegistered }: Regi
         </p>
       )}
     </div>
+    </VerifiedEmailGate>
   )
 }

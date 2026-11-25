@@ -8,36 +8,22 @@ import { Select } from '@/shared/ui/select'
 import { TextField } from '@/shared/ui/text-field'
 import { getAnalytics, type TicketTypeStats } from '../api/analyticsApi'
 import { useAnalyticsMessages } from '../i18n/messages'
+import { isInvalidCustomRange, PERIODS, periodRange, type CustomDates, type Period } from '../lib/periodRange'
 import { CampaignTable, Overview, SalesChart, TicketTypeTable } from './AnalyticsSections'
-
-type Period = 'all' | '7' | '30' | 'custom'
-
-const PERIODS: Period[] = ['all', '7', '30', 'custom']
-
-const DAY_MS = 24 * 60 * 60 * 1000
-
-type Range = { from: string; to: string }
-
-const dayStart = (ymd: string) => new Date(`${ymd}T00:00`).toISOString()
-
-const dayEnd = (ymd: string) => new Date(Date.parse(`${ymd}T00:00`) + DAY_MS).toISOString()
-
-function periodRange(period: Period, custom: Range): { from: string | null; to: string | null } {
-  if (period === 'custom') {
-    return { from: custom.from ? dayStart(custom.from) : null, to: custom.to ? dayEnd(custom.to) : null }
-  }
-  return { from: period === 'all' ? null : new Date(Date.now() - Number(period) * DAY_MS).toISOString(), to: null }
-}
+import { SalesPayoutSummary } from './SalesPayoutSummary'
 
 export function OrganizerAnalyticsPage() {
   const { eventId = '' } = useParams()
   const t = useAnalyticsMessages()
   const [ticketTypeId, setTicketTypeId] = useState('')
   const [period, setPeriod] = useState<Period>('all')
-  const [custom, setCustom] = useState<Range>({ from: '', to: '' })
+  // When the period was picked: "Last 7/30 days" count back from this fixed moment, not from each
+  // render's clock, so the range (and the request key below) stays stable until the period changes.
+  const [pickedAt, setPickedAt] = useState(() => Date.now())
+  const [custom, setCustom] = useState<CustomDates>({ from: '', to: '' })
   const [types, setTypes] = useState<TicketTypeStats[]>([])
-  const invalidRange = period === 'custom' && !!custom.from && !!custom.to && custom.to < custom.from
-  const range = invalidRange ? { from: null, to: null } : periodRange(period, custom)
+  const invalidRange = isInvalidCustomRange(period, custom)
+  const range = periodRange(period, custom, pickedAt)
   const { state, reload } = useAsyncData(`organizer-analytics:${eventId}:${ticketTypeId}:${range.from}:${range.to}`, async (signal) => {
     const data = await getAnalytics(eventId, { ticketTypeId, ...range }, signal)
     if (!ticketTypeId) setTypes(data.ticketTypes)
@@ -46,6 +32,7 @@ export function OrganizerAnalyticsPage() {
 
   return (
     <Page title={t.title} intro={t.intro} width="xl">
+      <SalesPayoutSummary eventId={eventId} />
       <div className="flex flex-wrap gap-4">
         <Select
           label={t.ticketType}
@@ -64,7 +51,10 @@ export function OrganizerAnalyticsPage() {
           label={t.period}
           hint={t.periodHint}
           value={period}
-          onChange={(event) => setPeriod(PERIODS.find((p) => p === event.target.value) ?? 'all')}
+          onChange={(event) => {
+            setPeriod(PERIODS.find((p) => p === event.target.value) ?? 'all')
+            setPickedAt(Date.now())
+          }}
           className="min-w-56"
         >
           {PERIODS.map((value) => (

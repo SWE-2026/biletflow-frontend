@@ -1,6 +1,6 @@
 import type { User } from '@/entities/user'
 import { apiRequest } from '@/shared/api'
-import type { Organizer, OrganizerInput } from '../model/types'
+import type { Organizer, OrganizerInput, Payout } from '../model/types'
 
 export const organizerApi = {
   get: (signal?: AbortSignal) =>
@@ -16,4 +16,7 @@ export const organizerApi = {
     apiRequest<{ organizer: Organizer }>('/organizer/profile', { method: 'PUT', body: input }).then(
       (r) => r.organizer,
     ),
+
+  payouts: (signal?: AbortSignal) =>
+    apiRequest<{ payouts: Payout[] }>('/organizer/payouts', { signal }).then((r) => r.payouts),
 }

@@ -10,7 +10,9 @@ import { useAsyncData } from '@/shared/lib/async-data'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { useConfirmationMessages } from '../i18n/confirmationMessages'
 import { shortId } from '../lib/format'
+import { orderSupportPath } from '../lib/support'
 import { DownloadTicketsButton } from './DownloadTicketsButton'
+import { OrderCalendar } from './OrderCalendar'
 import { SeatList } from '@/entities/seat'
 
 function Row({ label, children }: { label: string; children: ReactNode }) {
@@ -155,12 +157,17 @@ function Confirmation({ order, tickets }: { order: Order; tickets: Ticket[] }) {
         )}
       </section>
 
+      {event && <OrderCalendar event={event} hasValidTicket={hasValidTicket} />}
+
       <div className="flex flex-wrap gap-4 text-sm font-medium">
         <Link to="/account/tickets" className="text-indigo-600 hover:text-indigo-700">
           {t.myTickets} →
         </Link>
         <Link to={`/events/${order.eventId}`} className="text-gray-600 hover:text-gray-900">
           {t.backToEvent}
+        </Link>
+        <Link to={orderSupportPath(order.id)} className="text-gray-600 hover:text-gray-900">
+          {t.getHelp}
         </Link>
       </div>
     </div>

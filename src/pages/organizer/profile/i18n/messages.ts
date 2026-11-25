@@ -16,7 +16,7 @@ export const useProfileMessages = createMessages({
       'Staff and admin accounts can’t create an organizer profile. Sign in with a personal account to organize events.',
     verifyEmailTitle: 'Verify your email first',
     verifyEmailHint: (email: string) =>
-      `Organizers need a verified email address. Sign out, then sign in again with an email code sent to ${email}. That verifies it.`,
+      `Organizers need a verified email address. Choose “Verify email” and enter the code we send to ${email}.`,
     // Form
     organizerType: 'Organizer type',
     type_individual: 'Individual',
@@ -37,6 +37,21 @@ export const useProfileMessages = createMessages({
     errorEmail: 'Enter a valid email address, like name@example.com.',
     role_conflict: 'This account already has an organizer profile or a staff role.',
     email_unverified: 'Verify your email address before creating an organizer profile.',
+    // Payouts
+    payoutsTitle: 'Payouts',
+    payoutsIntro:
+      'One payout is scheduled for each ended event with paid sales: gross sales minus refunds and processing fees. Payouts are simulated; no real money moves.',
+    loadingPayouts: 'Loading payouts…',
+    noPayouts: 'No payouts yet. They appear here after a paid event ends and the platform schedules them.',
+    payoutEvent: 'Event',
+    payoutAmount: 'Payout',
+    payoutBreakdown: (gross: string, refunds: string, fees: string) => `Gross ${gross} − refunds ${refunds} − fees ${fees}`,
+    payoutStatus: 'Status',
+    payoutCreated: 'Scheduled on',
+    payoutPaid: 'Paid on',
+    payout_scheduled: 'Scheduled',
+    payout_on_hold: 'On hold',
+    payout_paid: 'Paid',
   },
   ru: {
     titleOrganizer: 'Профиль организатора',
@@ -54,7 +69,7 @@ export const useProfileMessages = createMessages({
       'Сотрудники и администраторы не могут создать профиль организатора. Чтобы проводить мероприятия, войдите с личного аккаунта.',
     verifyEmailTitle: 'Сначала подтвердите почту',
     verifyEmailHint: (email) =>
-      `Организаторам нужна подтверждённая почта. Выйдите и войдите снова по коду, отправленному на ${email}, — это подтвердит адрес.`,
+      `Организаторам нужна подтверждённая почта. Нажмите «Подтвердить почту» и введите код, который придёт на ${email}.`,
     organizerType: 'Тип организатора',
     type_individual: 'Частное лицо',
     typeHint_individual: 'Вы проводите мероприятия от своего имени.',
@@ -74,6 +89,20 @@ export const useProfileMessages = createMessages({
     errorEmail: 'Введите корректный адрес почты, например name@example.com.',
     role_conflict: 'У этой учётной записи уже есть профиль организатора или служебная роль.',
     email_unverified: 'Подтвердите почту, прежде чем создавать профиль организатора.',
+    payoutsTitle: 'Выплаты',
+    payoutsIntro:
+      'Для каждого завершённого мероприятия с платными продажами планируется одна выплата: валовая выручка минус возвраты и сервисные сборы. Выплаты имитируются, реальные деньги не переводятся.',
+    loadingPayouts: 'Загружаем выплаты…',
+    noPayouts: 'Выплат пока нет. Они появятся здесь, когда платное мероприятие завершится и платформа запланирует выплату.',
+    payoutEvent: 'Мероприятие',
+    payoutAmount: 'К выплате',
+    payoutBreakdown: (gross, refunds, fees) => `Выручка ${gross} − возвраты ${refunds} − сборы ${fees}`,
+    payoutStatus: 'Статус',
+    payoutCreated: 'Запланирована',
+    payoutPaid: 'Выплачена',
+    payout_scheduled: 'Запланирована',
+    payout_on_hold: 'Удержана',
+    payout_paid: 'Выплачена',
   },
   kk: {
     titleOrganizer: 'Ұйымдастырушы профилі',
@@ -91,7 +120,7 @@ export const useProfileMessages = createMessages({
       'Қызметкерлер мен әкімшілер ұйымдастырушы профилін жасай алмайды. Іс-шара өткізу үшін жеке тіркелгіңізбен кіріңіз.',
     verifyEmailTitle: 'Алдымен поштаңызды растаңыз',
     verifyEmailHint: (email) =>
-      `Ұйымдастырушыларға расталған пошта қажет. Шығып, ${email} мекенжайына жіберілген кодпен қайта кіріңіз — бұл мекенжайды растайды.`,
+      `Ұйымдастырушыларға расталған пошта қажет. «Поштаны растау» түймесін басып, ${email} мекенжайына келген кодты енгізіңіз.`,
     organizerType: 'Ұйымдастырушы түрі',
     type_individual: 'Жеке тұлға',
     typeHint_individual: 'Іс-шараларды өз атыңыздан өткізесіз.',
@@ -111,6 +140,20 @@ export const useProfileMessages = createMessages({
     errorEmail: 'Дұрыс пошта мекенжайын енгізіңіз, мысалы name@example.com.',
     role_conflict: 'Бұл тіркелгіде ұйымдастырушы профилі немесе қызметтік рөл бар.',
     email_unverified: 'Ұйымдастырушы профилін жасамас бұрын поштаңызды растаңыз.',
+    payoutsTitle: 'Төлемақылар',
+    payoutsIntro:
+      'Ақылы сатылымы бар әр аяқталған іс-шараға бір төлемақы жоспарланады: жалпы түсім минус қайтарулар мен қызмет алымдары. Төлемақылар имитацияланады, нақты ақша аударылмайды.',
+    loadingPayouts: 'Төлемақылар жүктелуде…',
+    noPayouts: 'Әзірге төлемақы жоқ. Ақылы іс-шара аяқталып, платформа төлемақыны жоспарлағанда осында пайда болады.',
+    payoutEvent: 'Іс-шара',
+    payoutAmount: 'Төлемақы',
+    payoutBreakdown: (gross, refunds, fees) => `Түсім ${gross} − қайтарулар ${refunds} − алымдар ${fees}`,
+    payoutStatus: 'Күйі',
+    payoutCreated: 'Жоспарланған күні',
+    payoutPaid: 'Төленген күні',
+    payout_scheduled: 'Жоспарланған',
+    payout_on_hold: 'Ұсталған',
+    payout_paid: 'Төленген',
   },
 })
 
