@@ -6,7 +6,7 @@ import {
   type SupportCase,
 } from '@/entities/support-case'
 import { useSession } from '@/entities/user'
-import { formatDateTime, useLocale } from '@/shared/i18n'
+import { browserTimeZone, formatDateTime, useLocale } from '@/shared/i18n'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { Button } from '@/shared/ui/button'
 import { FilterPills } from '@/shared/ui/filter-pills'
@@ -275,7 +275,7 @@ export function SupportCasesPage({ scope }: SupportCasesPageProps) {
                       </td>
                     )}
                     <td className="px-4 py-3.5 text-xs text-gray-400">
-                      {formatDateTime(c.lastActivityAt, 'UTC', locale, 'dateTime')}
+                      {formatDateTime(c.lastActivityAt, browserTimeZone, locale, 'dateTime')}
                     </td>
                   </tr>
                 ))}

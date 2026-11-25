@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import { useParams } from 'react-router'
 import { ApiError, getErrorMessage } from '@/shared/api'
-import { formatDateTime, useLocale } from '@/shared/i18n'
+import { browserTimeZone, formatDateTime, useLocale } from '@/shared/i18n'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { Button } from '@/shared/ui/button'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
@@ -60,7 +60,7 @@ function StaffRow({ member, onRemove }: StaffRowProps) {
       <div className="flex items-center gap-4">
         <RoleBadge role={member.role} />
         <span className="text-xs text-gray-400">
-          {formatDateTime(member.createdAt, 'UTC', locale, 'date')}
+          {formatDateTime(member.createdAt, browserTimeZone, locale, 'date')}
         </span>
         <Button
           variant="danger"

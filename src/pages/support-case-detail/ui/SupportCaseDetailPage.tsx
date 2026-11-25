@@ -10,7 +10,7 @@ import {
 } from '@/entities/support-case'
 import { useSession } from '@/entities/user'
 import { ApiError } from '@/shared/api'
-import { formatDateTime, useLocale } from '@/shared/i18n'
+import { browserTimeZone, formatDateTime, useLocale } from '@/shared/i18n'
 import { useAsyncData } from '@/shared/lib/async-data'
 import { Button } from '@/shared/ui/button'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
@@ -130,7 +130,7 @@ export function SupportCaseDetailPage() {
             </h1>
             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
               {tCases[`category_${supportCase.category}`] ?? supportCase.category} ·{' '}
-              {formatDateTime(supportCase.createdAt, 'UTC', locale, 'dateTime')}
+              {formatDateTime(supportCase.createdAt, browserTimeZone, locale, 'dateTime')}
             </p>
           </div>
 
@@ -221,7 +221,7 @@ export function SupportCaseDetailPage() {
               <div key={msg.id} className="flex justify-center my-3">
                 <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                   {t.statusChangeNotice(statusLabel)} ·{' '}
-                  {formatDateTime(msg.createdAt, 'UTC', locale, 'time')}
+                  {formatDateTime(msg.createdAt, browserTimeZone, locale, 'time')}
                 </span>
               </div>
             )
@@ -232,7 +232,7 @@ export function SupportCaseDetailPage() {
               <div key={msg.id} className="flex justify-center my-3">
                 <span className="rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-400">
                   {msg.body ? t.assignmentNotice(msg.body) : t.unassignmentNotice} ·{' '}
-                  {formatDateTime(msg.createdAt, 'UTC', locale, 'time')}
+                  {formatDateTime(msg.createdAt, browserTimeZone, locale, 'time')}
                 </span>
               </div>
             )
@@ -252,7 +252,7 @@ export function SupportCaseDetailPage() {
                 <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[10px] text-gray-500 dark:bg-gray-800">
                   {msg.authorRole === 'handler' ? t.handlerBadge : t.requesterBadge}
                 </span>
-                <span>{formatDateTime(msg.createdAt, 'UTC', locale, 'dateTime')}</span>
+                <span>{formatDateTime(msg.createdAt, browserTimeZone, locale, 'dateTime')}</span>
               </div>
 
               <div
