@@ -11,7 +11,7 @@ export type NavItem = {
 }
 
 export type SubNav = {
-  title?: string
+  eventId?: string
   back?: NavItem
   items: NavItem[]
 }
@@ -75,7 +75,7 @@ export const organizerEventHandle: RouteHandle = {
     const base = `/organizer/events/${eventId}`
 
     return {
-      title: t.eventTitle(eventId),
+      eventId,
       back: { to: '/organizer', label: t.dashboard },
       items: [
         { to: base, label: t.overview, end: true },

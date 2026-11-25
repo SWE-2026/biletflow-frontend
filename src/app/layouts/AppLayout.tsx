@@ -4,6 +4,7 @@ import { apiRequest } from '@/shared/api'
 import { useAppMessages } from '../i18n/messages'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { areas, type RouteHandle } from './navigation'
+import { OrganizerEventTitle } from './OrganizerEventTitle'
 
 // Revoke the token server-side, but sign out locally even if that request fails
 function signOut() {
@@ -94,11 +95,7 @@ export function AppLayout() {
                 ← {subNav.back.label}
               </Link>
             )}
-            {subNav.title && (
-              <span className="shrink-0 border-l border-gray-300 py-1 pl-4 font-semibold text-gray-900">
-                {subNav.title}
-              </span>
-            )}
+            {subNav.eventId && <OrganizerEventTitle eventId={subNav.eventId} />}
             <nav aria-label={t.sectionNavigation} className="flex gap-4">
               {subNav.items.map((item) => (
                 <NavLink
