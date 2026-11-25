@@ -111,7 +111,7 @@ function OrdersTable({ orders }: { orders: OrganizerOrder[] }) {
             align: 'right',
             cell: (order) => formatCurrency(order.totalAmount, CURRENCY, locale),
           },
-          { header: t.status, cell: (order) => <OrderStatusBadge status={order.status} /> },
+          { header: t.status, cell: (order) => <OrderStatusBadge status={order.status} payments={order.payments} /> },
           {
             header: t.created,
             cell: (order) => (

@@ -66,7 +66,7 @@ export function AdminOrdersPage() {
                 { header: t.event, cell: (order) => order.eventTitle },
                 { header: t.buyer, cell: (order) => order.buyerEmail },
                 { header: t.total, align: 'right', cell: (order) => formatCurrency(order.totalAmount, CURRENCY, locale) },
-                { header: t.status, cell: (order) => <OrderStatusBadge status={order.status} /> },
+                { header: t.status, cell: (order) => <OrderStatusBadge status={order.status} payments={order.payments} /> },
                 {
                   header: t.created,
                   cell: (order) => (

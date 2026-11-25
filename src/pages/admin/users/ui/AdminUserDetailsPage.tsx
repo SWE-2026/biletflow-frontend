@@ -9,6 +9,7 @@ import { Notice } from '@/shared/ui/notice'
 import { Card, DetailList, Page } from '@/shared/ui/page'
 import { adminUsersApi, type AdminUser } from '../api/adminUsersApi'
 import { useAdminUsersMessages } from '../i18n/messages'
+import { UserOrders } from './UserOrders'
 import { UserStatusBadge } from './UserStatusBadge'
 
 function UserCard({ user, onChange }: { user: AdminUser; onChange: (user: AdminUser, message: string) => void }) {
@@ -76,13 +77,16 @@ export function AdminUserDetailsPage() {
       {state.status === 'error' && <ErrorState message={getErrorMessage(state.error)} onRetry={reload} />}
       {state.status === 'success' && !user && <ErrorState title={t.notFound} message={t.notFoundHint} />}
       {user && (
-        <UserCard
-          user={user}
-          onChange={(updated, message) => {
-            setNotice(message)
-            setData(updated)
-          }}
-        />
+        <>
+          <UserCard
+            user={user}
+            onChange={(updated, message) => {
+              setNotice(message)
+              setData(updated)
+            }}
+          />
+          <UserOrders email={user.email} />
+        </>
       )}
     </Page>
   )

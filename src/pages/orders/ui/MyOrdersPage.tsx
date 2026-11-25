@@ -41,7 +41,7 @@ function OrderCard({ order, dispute, now }: { order: Order; dispute?: Dispute; n
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <OrderStatusBadge status={order.status} />
+          <OrderStatusBadge status={order.status} payments={order.payments} />
           {dispute && <DisputeStatusBadge status={dispute.status} />}
         </div>
       </div>

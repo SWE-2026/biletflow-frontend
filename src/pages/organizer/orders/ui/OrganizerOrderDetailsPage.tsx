@@ -148,7 +148,7 @@ export function OrganizerOrderDetailsPage() {
       title={
         <span className="inline-flex flex-wrap items-center gap-3">
           <span className="font-mono" title={order.id}>{`${t.order} ${shortId(order.id)}`}</span>
-          <OrderStatusBadge status={order.status} />
+          <OrderStatusBadge status={order.status} payments={order.payments} />
         </span>
       }
       actions={back}
