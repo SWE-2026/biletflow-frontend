@@ -7,6 +7,7 @@ export const useOrderMessages = createMessages({
     status_cancelled: 'Cancelled',
     status_refunded: 'Refunded',
     status_expired: 'Expired',
+    status_payment_failed: 'Payment failed',
   },
   ru: {
     status_pending: 'Ожидает оплаты',
@@ -14,6 +15,7 @@ export const useOrderMessages = createMessages({
     status_cancelled: 'Отменён',
     status_refunded: 'Возвращён',
     status_expired: 'Истёк',
+    status_payment_failed: 'Оплата не прошла',
   },
   kk: {
     status_pending: 'Төлемді күтуде',
@@ -21,5 +23,6 @@ export const useOrderMessages = createMessages({
     status_cancelled: 'Болдырылмады',
     status_refunded: 'Қайтарылды',
     status_expired: 'Мерзімі өтті',
+    status_payment_failed: 'Төлем өтпеді',
   },
 })

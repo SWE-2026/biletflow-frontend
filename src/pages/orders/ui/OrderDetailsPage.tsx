@@ -59,11 +59,14 @@ function StatusNotice({ order }: { order: Order }) {
     )
   }
 
+  const paymentFailed = order.status === 'cancelled' && order.payments.some((p) => p.status === 'failed')
   const hint =
     order.status === 'pending' || order.status === 'expired'
       ? t.expiredHint
       : order.status === 'cancelled'
-        ? t.cancelledHint
+        ? paymentFailed
+          ? t.paymentFailedHint
+          : t.cancelledHint
         : order.status === 'refunded'
           ? t.refundedHint
           : null
@@ -221,7 +224,7 @@ function OrderDetails({ data, onDispute }: { data: OrderView; onDispute: (disput
       <header className="space-y-2">
         <div className="flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-semibold text-gray-900">{order.eventTitle}</h1>
-          <OrderStatusBadge status={order.status} />
+          <OrderStatusBadge status={order.status} payments={order.payments} />
           {dispute && <DisputeStatusBadge status={dispute.status} />}
         </div>
         <p className="text-sm text-gray-600">

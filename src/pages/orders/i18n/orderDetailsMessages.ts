@@ -15,6 +15,7 @@ export const useOrderDetailsMessages = createMessages({
     completePayment: 'Complete payment',
     expiredHint: 'The ticket hold ended before payment, so no tickets were issued.',
     cancelledHint: 'This order was cancelled and its tickets are no longer valid.',
+    paymentFailedHint: 'The payment for this order failed, so no tickets were issued and nothing was charged.',
     refundedHint: 'This order was refunded in full (demo refund: no money moved). Its tickets are no longer valid.',
 
     summary: 'Order summary',
@@ -76,6 +77,7 @@ export const useOrderDetailsMessages = createMessages({
     completePayment: 'Завершить оплату',
     expiredHint: 'Бронь закончилась до оплаты, поэтому билеты не были выпущены.',
     cancelledHint: 'Заказ отменён, его билеты больше не действительны.',
+    paymentFailedHint: 'Оплата по этому заказу не прошла: билеты не выпущены, деньги не списаны.',
     refundedHint: 'Заказ полностью возвращён (демо-возврат: деньги не переводились). Его билеты больше не действительны.',
 
     summary: 'Состав заказа',
@@ -137,6 +139,7 @@ export const useOrderDetailsMessages = createMessages({
     completePayment: 'Төлемді аяқтау',
     expiredHint: 'Бронь төлемге дейін аяқталды, сондықтан билеттер шығарылмады.',
     cancelledHint: 'Тапсырыс болдырылмады, оның билеттері енді жарамсыз.',
+    paymentFailedHint: 'Бұл тапсырыстың төлемі өтпеді: билеттер берілмеді, ақша алынбады.',
     refundedHint: 'Тапсырыс толық қайтарылды (демо-қайтару: ақша аударылмады). Оның билеттері енді жарамсыз.',
 
     summary: 'Тапсырыс құрамы',

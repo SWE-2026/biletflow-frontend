@@ -16,6 +16,7 @@ import { useAsyncData } from '@/shared/lib/async-data'
 import { ErrorState, LoadingState } from '@/shared/ui/load-state'
 import { useEventDetailsMessages, type EventDetailsMessages } from '../i18n/messages'
 import { CampaignBanner } from './CampaignBanner'
+import { ReportEvent } from './ReportEvent'
 import { TicketTypeList } from './TicketTypeList'
 
 function registrationWindow(event: Event, t: EventDetailsMessages, locale: Locale) {
@@ -103,6 +104,7 @@ function EventDetails({ event, children }: { event: Event; children: ReactNode }
               {t.contactSupport}
             </Link>
           </p>
+          <ReportEvent eventId={event.id} />
         </div>
 
         <div className="space-y-8 lg:order-1 lg:col-span-2">
