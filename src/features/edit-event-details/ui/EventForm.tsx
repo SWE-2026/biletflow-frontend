@@ -18,6 +18,7 @@ import {
   type EventFormValues,
 } from '../model/formValues'
 import { useEventFormMessages } from '../i18n/messages'
+import { ImageUploadButton } from './ImageUploadButton'
 
 const KAZAKHSTAN_TIMEZONES = [
   DEFAULT_TIMEZONE,
@@ -119,12 +120,37 @@ export function EventForm({
           placeholder="https://"
           {...field('imageUrl')}
         />
+        <div className="flex flex-wrap items-start gap-4">
+          {values.imageUrl.trim() && (
+            <img
+              src={values.imageUrl.trim()}
+              alt=""
+              className="h-24 w-40 rounded-md border border-gray-200 object-cover"
+            />
+          )}
+          <ImageUploadButton
+            label={t.uploadCover}
+            disabled={pending}
+            onUploaded={([url]) => setValues((current) => ({ ...current, imageUrl: url }))}
+          />
+        </div>
         <TextArea
           label={t.imageUrls}
           rows={3}
           hint={t.imageUrlsHint(MAX_GALLERY_IMAGES)}
           placeholder="https://"
           {...field('imageUrls')}
+        />
+        <ImageUploadButton
+          label={t.uploadGallery}
+          multiple
+          disabled={pending}
+          onUploaded={(urls) =>
+            setValues((current) => ({
+              ...current,
+              imageUrls: [current.imageUrls.trim(), ...urls].filter(Boolean).join('\n'),
+            }))
+          }
         />
       </Section>
 
